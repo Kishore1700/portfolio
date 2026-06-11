@@ -497,7 +497,7 @@ function SuitUpEntrance({ onSuitUp }) {
 /* ==========================================================================
    COMPONENT: IMMERSIVE HUD NAV HEADER
    ========================================================================== */
-function Header({ isOverloaded }) {
+function Header({ isOverloaded, activeTab, setActiveTab }) {
   const [timeStr, setTimeStr] = useState('');
   const [fakeCpu, setFakeCpu] = useState(8);
 
@@ -521,9 +521,9 @@ function Header({ isOverloaded }) {
     };
   }, [isOverloaded]);
 
-  const handleNavClick = (section) => {
+  const handleNavClick = (tabName) => {
     playSound('click');
-    alert(`J.A.R.V.I.S.: [${section.toUpperCase()}] suit telemetry diagnostic active. SIR.`);
+    setActiveTab(tabName);
   };
 
   return (
@@ -535,10 +535,18 @@ function Header({ isOverloaded }) {
 
       <nav>
         <ul className="hud-nav-links">
-          <li className="hud-nav-item active"><a href="#" onClick={() => handleNavClick('core')}>CORE HUD</a></li>
-          <li className="hud-nav-item"><a href="#" onClick={() => handleNavClick('specs')}>DIAGNOSTICS</a></li>
-          <li className="hud-nav-item"><a href="#" onClick={() => handleNavClick('loadout')}>LOADOUT</a></li>
-          <li className="hud-nav-item"><a href="#" onClick={() => handleNavClick('link')}>UPLINK</a></li>
+          <li className={`hud-nav-item ${activeTab === 'core' ? 'active' : ''}`}>
+            <a href="#" onClick={() => handleNavClick('core')}>CORE HUD</a>
+          </li>
+          <li className={`hud-nav-item ${activeTab === 'diagnostics' ? 'active' : ''}`}>
+            <a href="#" onClick={() => handleNavClick('diagnostics')}>DIAGNOSTICS</a>
+          </li>
+          <li className={`hud-nav-item ${activeTab === 'loadout' ? 'active' : ''}`}>
+            <a href="#" onClick={() => handleNavClick('loadout')}>LOADOUT</a>
+          </li>
+          <li className={`hud-nav-item ${activeTab === 'link' ? 'active' : ''}`}>
+            <a href="#" onClick={() => handleNavClick('link')}>UPLINK</a>
+          </li>
         </ul>
       </nav>
 
@@ -564,7 +572,7 @@ function Header({ isOverloaded }) {
 /* ==========================================================================
    COMPONENT: HERO / STARK COMMAND CENTER
    ========================================================================== */
-function Hero({ isOverloaded, toggleOverload }) {
+function Hero({ isOverloaded, toggleOverload, setActiveTab }) {
   const [profileText, setProfileText] = useState('');
   const starkProfile = [
     "J.A.R.V.I.S.@STARK_NET:~$ ./armor_diagnostics.sh",
@@ -608,9 +616,9 @@ function Hero({ isOverloaded, toggleOverload }) {
     return () => clearTimeout(typeTimer);
   }, []);
 
-  const handleActionClick = (btnName) => {
+  const handleActionClick = (tabName) => {
     playSound('click');
-    alert(`J.A.R.V.I.S.: Deploying Stark system telemetry: [${btnName}]. Blueprint unlocked.`);
+    setActiveTab(tabName);
   };
 
   const handleOverloadClick = () => {
@@ -642,10 +650,10 @@ function Hero({ isOverloaded, toggleOverload }) {
         </div>
 
         <div className="console-actions">
-          <button className="cyber-btn" onClick={() => handleActionClick('armor_diagnostics')}>
+          <button className="cyber-btn" onClick={() => handleActionClick('diagnostics')}>
             SUIT SPECS
           </button>
-          <button className="cyber-btn" onClick={() => handleActionClick('repulsor_uplink')}>
+          <button className="cyber-btn" onClick={() => handleActionClick('link')}>
             REPULSOR LINK
           </button>
         </div>
@@ -679,10 +687,469 @@ function Hero({ isOverloaded, toggleOverload }) {
 }
 
 /* ==========================================================================
+   COMPONENT: CIRCULAR TELEMETRY GAUGE
+   ========================================================================== */
+function TelemetryGauge({ value, label }) {
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
+  return (
+    <div className="telemetry-gauge-container">
+      <svg className="gauge-svg">
+        <circle className="gauge-bg-circle" cx="32.5" cy="32.5" r={radius} />
+        <circle 
+          className="gauge-fill-circle" 
+          cx="32.5" 
+          cy="32.5" 
+          r={radius} 
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+        />
+        <text className="gauge-text" x="32.5" y="36.5">{value}%</text>
+      </svg>
+      <span className="gauge-label">{label}</span>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENT: HOLOGRAPHIC BLUEPRINT SCHEMATIC VIEWER
+   ========================================================================== */
+function HolographicViewer({ activeMilestone, isOverloaded }) {
+  return (
+    <div className="holo-viewer-panel">
+      <div className="holo-projection-cone"></div>
+      <div className="holo-display-deck">
+        <div className="holo-hologram-glow">
+          <div className="holo-schematic-wrapper">
+            {activeMilestone === 'm1' && (
+              /* MARK I Blueprint: Basic Logic/School Grid */
+              <svg className="holo-schematic-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-core)" strokeWidth="1" strokeDasharray="3, 5" className="schematic-rotating-ring" />
+                <line x1="10" y1="50" x2="90" y2="50" stroke="var(--color-core)" strokeWidth="0.5" />
+                <line x1="50" y1="10" x2="50" y2="90" stroke="var(--color-core)" strokeWidth="0.5" />
+                <rect x="35" y="35" width="30" height="30" fill="none" stroke="var(--color-core)" strokeWidth="1.5" className="schematic-glowing-path" />
+                <circle cx="50" cy="50" r="8" fill="none" stroke="var(--color-aux)" strokeWidth="2" />
+                <circle cx="50" cy="50" r="3" className="schematic-core-node" />
+              </svg>
+            )}
+            
+            {activeMilestone === 'm2' && (
+              /* MARK II Blueprint: High School Process Node */
+              <svg className="holo-schematic-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--color-core)" strokeWidth="1" />
+                <path d="M20,50 L40,50 L50,30 L60,70 L70,50 L80,50" fill="none" stroke="var(--color-core)" strokeWidth="1.5" className="schematic-glowing-path" />
+                <circle cx="20" cy="50" r="3" fill="var(--color-aux)" />
+                <circle cx="80" cy="50" r="3" fill="var(--color-aux)" />
+                <circle cx="50" cy="30" r="4" className="schematic-core-node" />
+                <circle cx="60" cy="70" r="4" className="schematic-core-node" />
+                <line x1="50" y1="10" x2="50" y2="25" stroke="var(--color-core)" strokeWidth="1" strokeDasharray="2, 2" />
+                <line x1="50" y1="75" x2="50" y2="90" stroke="var(--color-core)" strokeWidth="1" strokeDasharray="2, 2" />
+              </svg>
+            )}
+
+            {activeMilestone === 'm3' && (
+              /* MARK III Blueprint: Engineering Robotic/Arm Blueprint */
+              <svg className="holo-schematic-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--color-core)" strokeWidth="0.5" />
+                <polygon points="50,15 80,35 80,65 50,85 20,65 20,35" fill="none" stroke="var(--color-core)" strokeWidth="1" className="schematic-rotating-ring" />
+                <path d="M50,15 L50,85 M20,35 L80,65 M20,65 L80,35" stroke="var(--color-core)" strokeWidth="0.5" strokeDasharray="2, 2" />
+                <circle cx="50" cy="50" r="20" fill="none" stroke="var(--color-core)" strokeWidth="1.5" className="schematic-glowing-path" />
+                <circle cx="50" cy="50" r="5" className="schematic-core-node" />
+                <circle cx="50" cy="15" r="3" fill="var(--color-aux)" />
+                <circle cx="50" cy="85" r="3" fill="var(--color-aux)" />
+              </svg>
+            )}
+
+            {activeMilestone === 'm4' && (
+              /* MARK IV Blueprint: Neural AI / Full-Stack Network */
+              <svg className="holo-schematic-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="25" fill="none" stroke="var(--color-core)" strokeWidth="1" className="schematic-rotating-ring" />
+                <g className="schematic-rotating-ring" style={{ animationDuration: '10s' }}>
+                  <circle cx="50" cy="15" r="4" fill="var(--color-core)" />
+                  <circle cx="85" cy="50" r="4" fill="var(--color-core)" />
+                  <circle cx="50" cy="85" r="4" fill="var(--color-core)" />
+                  <circle cx="15" cy="50" r="4" fill="var(--color-core)" />
+                  
+                  <line x1="50" y1="15" x2="85" y2="50" stroke="var(--color-core)" strokeWidth="0.75" />
+                  <line x1="85" y1="50" x2="50" y2="85" stroke="var(--color-core)" strokeWidth="0.75" />
+                  <line x1="50" y1="85" x2="15" y2="50" stroke="var(--color-core)" strokeWidth="0.75" />
+                  <line x1="15" y1="50" x2="50" y2="15" stroke="var(--color-core)" strokeWidth="0.75" />
+                </g>
+                <circle cx="50" cy="50" r="10" fill="none" stroke="var(--color-aux)" strokeWidth="1.5" className="schematic-glowing-path" />
+                <circle cx="50" cy="50" r="4" className="schematic-core-node" />
+              </svg>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="holo-status-label glow-text">
+        {isOverloaded ? 'HUD_WARN: OVERLOAD ACTIVE' : 'HOLO_PROJ: HUD_DECK'}
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENT: DIAGNOSTICS TIMELINE PANEL (EDUCATION)
+   ========================================================================== */
+function Diagnostics({ isOverloaded }) {
+  const [activeM, setActiveM] = useState('m4');
+
+  const milestones = {
+    m1: {
+      mark: "MARK I: FOUNDATION",
+      title: "Primary & Secondary Schooling",
+      year: "2010 - 2020",
+      description: "Diagnostic report: System initiation. Configured early logical matrices including core Mathematics, General Physics, and Chemistry. Engaged initial software coding loops, creating simple logic scripts. Core cognitive circuits successfully stabilized.",
+      logic: 70,
+      tech: 25,
+      creative: 40
+    },
+    m2: {
+      mark: "MARK II: CORE CALIBRATION",
+      title: "Higher Secondary College",
+      year: "2020 - 2022",
+      description: "Diagnostic report: Logic calibration. Loaded Advanced Mathematics, Particle Physics, and Digital Circuit blueprints. Deployed first structured software loadouts utilizing C++ compilers, object-oriented concepts, and core algorithms.",
+      logic: 82,
+      tech: 50,
+      creative: 45
+    },
+    m3: {
+      mark: "MARK III: ENGINEERING DESIGN",
+      title: "Bachelor of Computer Science Engineering",
+      year: "2022 - 2026",
+      description: "Diagnostic report: High-tech mechatronics. Initialized Computer Science core engineering modules. Successfully installed Database systems (SQL), Unix architectures, Cloud clusters, Web structures (HTML5/CSS3), and Microcontrollers.",
+      logic: 90,
+      tech: 85,
+      creative: 75
+    },
+    m4: {
+      mark: "MARK IV: AUTONOMOUS OVERDRIVE",
+      title: "Advanced Full-Stack & AI Systems",
+      year: "2026 - Present",
+      description: "Diagnostic report: Suit peak performance. Self-compiled React 18 frontend configurations, Node.js servers, Web Audio, and Canvas visual graphics. Engineered autonomous pipeline scripts, integrating neural APIs and high-end UI dashboards.",
+      logic: 96,
+      tech: 94,
+      creative: 92
+    }
+  };
+
+  const handleMilestoneClick = (id) => {
+    playSound('charge');
+    setActiveM(id);
+    document.body.classList.add('star-accelerate');
+    setTimeout(() => {
+      document.body.classList.remove('star-accelerate');
+    }, 600);
+  };
+
+  const current = milestones[activeM];
+
+  return (
+    <div className="hud-page-container">
+      <div className="hud-panel diagnostics-container">
+        <div className="decal-corner decal-tl"></div>
+        <div className="decal-corner decal-tr"></div>
+        <div className="decal-corner decal-bl"></div>
+        <div className="decal-corner decal-br"></div>
+        
+        {/* Left Side: Milestones List */}
+        <div className="milestones-sidebar">
+          <div className="sidebar-title-row">
+            <span className="glow-text" style={{ fontSize: '0.85rem', fontFamily: 'var(--font-header)', letterSpacing: '2px', fontWeight: 800 }}>
+              &gt; SUIT UPGRADES (LEARNING MILESTONES)
+            </span>
+            <span className="hud-logo-aux" style={{ fontSize: '0.55rem' }}>JARVIS.UPD</span>
+          </div>
+
+          <div className="milestones-list">
+            {Object.keys(milestones).map((key) => (
+              <div 
+                key={key} 
+                className={`milestone-item ${activeM === key ? 'active' : ''}`}
+                onClick={() => handleMilestoneClick(key)}
+              >
+                <div className="milestone-meta">
+                  <span className="milestone-mark">{milestones[key].mark}</span>
+                  <span className="milestone-title">{milestones[key].title}</span>
+                </div>
+                <span className="milestone-year">{milestones[key].year}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Report Description */}
+          <div className="milestone-details-box">
+            <span>&gt; MODULE: {current.mark}</span>
+            <span>&gt; DURATION: {current.year}</span>
+            <div style={{ marginTop: '5px', color: '#a0afc2' }}>{current.description}</div>
+          </div>
+
+          {/* Active Gauges */}
+          <div className="gauges-row">
+            <TelemetryGauge value={current.logic} label="Logic Threads" />
+            <TelemetryGauge value={current.tech} label="Tech Stack" />
+            <TelemetryGauge value={current.creative} label="Visor Design" />
+          </div>
+        </div>
+
+        {/* Right Side: Hologram projection */}
+        <HolographicViewer activeMilestone={activeM} isOverloaded={isOverloaded} />
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENT: LOADOUT PANEL (SKILLS BATTERY MATRIX)
+   ========================================================================== */
+function Loadout() {
+  const [selectedCategory, setSelectedCategory] = useState('front');
+
+  const categories = {
+    front: {
+      name: "REPULSORS: FRONTEND WEAPONS",
+      skills: [
+        { name: "React / React Hooks", level: 95 },
+        { name: "Modern Javascript (ES6+)", level: 92 },
+        { name: "HTML5 / Canvas Shaders", level: 88 },
+        { name: "CSS3 / Glassmorphism", level: 90 },
+        { name: "htm / Browser-Native Modules", level: 85 }
+      ]
+    },
+    back: {
+      name: "THRUSTERS: BACKEND ENGINE",
+      skills: [
+        { name: "Node.js / Express Servers", level: 88 },
+        { name: "RESTful Web APIs", level: 90 },
+        { name: "Relational SQL Databases", level: 85 },
+        { name: "Server Configuration", level: 80 }
+      ]
+    },
+    system: {
+      name: "COGNITIVE: SYSTEM LOADOUT",
+      skills: [
+        { name: "Git / Version Control", level: 92 },
+        { name: "Babel Compilers", level: 84 },
+        { name: "Web Audio Synthesizer", level: 86 },
+        { name: "AI / Neural APIs", level: 80 }
+      ]
+    }
+  };
+
+  const current = categories[selectedCategory];
+
+  return (
+    <div className="hud-page-container">
+      <div className="hud-panel diagnostics-container" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="decal-corner decal-tl"></div>
+        <div className="decal-corner decal-tr"></div>
+        <div className="decal-corner decal-bl"></div>
+        <div className="decal-corner decal-br"></div>
+
+        {/* Categories selector */}
+        <div className="milestones-sidebar">
+          <div className="sidebar-title-row">
+            <span className="glow-text" style={{ fontSize: '0.85rem', fontFamily: 'var(--font-header)', letterSpacing: '2px', fontWeight: 800 }}>
+              &gt; SUIT WEAPONS CONFIG (SKILL MATRIX)
+            </span>
+          </div>
+
+          <div className="milestones-list" style={{ flexGrow: 0 }}>
+            <div className={`milestone-item ${selectedCategory === 'front' ? 'active' : ''}`} onClick={() => setSelectedCategory('front')}>
+              <div className="milestone-meta">
+                <span className="milestone-mark">REPULSORS</span>
+                <span className="milestone-title">Frontend Visual weapons</span>
+              </div>
+            </div>
+            <div className={`milestone-item ${selectedCategory === 'back' ? 'active' : ''}`} onClick={() => setSelectedCategory('back')}>
+              <div className="milestone-meta">
+                <span className="milestone-mark">THRUSTERS</span>
+                <span className="milestone-title">Backend Stabilizing engines</span>
+              </div>
+            </div>
+            <div className={`milestone-item ${selectedCategory === 'system' ? 'active' : ''}`} onClick={() => setSelectedCategory('system')}>
+              <div className="milestone-meta">
+                <span className="milestone-mark">COGNITIVE</span>
+                <span className="milestone-title">Integrated systems loadout</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="milestone-details-box" style={{ minHeight: '180px' }}>
+            <span>&gt; CATEGORY: {current.name}</span>
+            <span style={{ color: '#a0afc2', marginTop: '10px' }}>
+              J.A.R.V.I.S. suit loadout maps Kishore's computational capabilities as dynamic system upgrades. Select weapon sets to check caliber metrics.
+            </span>
+          </div>
+        </div>
+
+        {/* Skill progress matrix */}
+        <div className="milestones-sidebar" style={{ borderLeft: '1px solid rgba(0, 240, 255, 0.08)' }}>
+          <div className="sidebar-title-row">
+            <span className="glow-text" style={{ fontSize: '0.85rem', fontFamily: 'var(--font-header)', letterSpacing: '2px', fontWeight: 800 }}>
+              &gt; DIAGNOSTICS MATRIX
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', flexGrow: 1, justify: 'center' }}>
+            {current.skills.map((skill, index) => (
+              <div key={index} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', justify: 'space-between', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
+                  <span>{skill.name}</span>
+                  <span style={{ color: 'var(--color-core)' }}>{skill.level}% POWER</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(var(--color-core-hsl), 0.15)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ width: `${skill.level}%`, height: '100%', background: 'linear-gradient(90deg, var(--color-aux), var(--color-core))', boxShadow: '0 0 10px var(--color-core)' }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENT: UPLINK TELEMETRY FORM (CONTACT)
+   ========================================================================== */
+function ContactForm() {
+  const [formData, setFormData] = useState({ name: '', email: '', telemetry: '' });
+  const [status, setStatus] = useState('idle'); // 'idle', 'sending', 'sent'
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleTransmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.telemetry) return;
+    
+    playSound('unlock');
+    setStatus('sending');
+    setTimeout(() => {
+      setStatus('sent');
+      setFormData({ name: '', email: '', telemetry: '' });
+      setTimeout(() => setStatus('idle'), 4000);
+    }, 2000);
+  };
+
+  return (
+    <div className="hud-page-container">
+      <div className="hud-panel diagnostics-container" style={{ gridTemplateColumns: '1.2fr 0.8fr' }}>
+        <div className="decal-corner decal-tl"></div>
+        <div className="decal-corner decal-tr"></div>
+        <div className="decal-corner decal-bl"></div>
+        <div className="decal-corner decal-br"></div>
+
+        {/* Message input console */}
+        <div className="milestones-sidebar">
+          <div className="sidebar-title-row">
+            <span className="glow-text" style={{ fontSize: '0.85rem', fontFamily: 'var(--font-header)', letterSpacing: '2px', fontWeight: 800 }}>
+              &gt; TRANSMIT UPLINK TELEMETRY
+            </span>
+          </div>
+
+          <form onSubmit={handleTransmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px', flexGrow: 1, justify: 'center' }}>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--color-core)' }}>PILOT_NAME</label>
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="EX: TONY STARK"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0, 240, 255, 0.15)', padding: '10px 15px', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', outline: 'none' }}
+                />
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--color-core)' }}>UPLINK_EMAIL</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="EX: TONY@STARK.COM"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0, 240, 255, 0.15)', padding: '10px 15px', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--color-core)' }}>TELEMETRY_LOG (MESSAGE)</label>
+              <textarea 
+                name="telemetry"
+                value={formData.telemetry}
+                onChange={handleInputChange}
+                required
+                rows="4"
+                placeholder="TYPE TRANSMISSION LOG TO KISHORE..."
+                style={{ width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0, 240, 255, 0.15)', padding: '10px 15px', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', outline: 'none', resize: 'none' }}
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="cyber-btn" 
+              disabled={status === 'sending'} 
+              style={{ alignSelf: 'flex-start', borderStyle: 'solid' }}
+            >
+              {status === 'sending' ? 'TRANSMITTING...' : 'SEND TRANSMISSION'}
+            </button>
+          </form>
+        </div>
+
+        {/* Transmission log status */}
+        <div className="milestones-sidebar" style={{ borderLeft: '1px solid rgba(0, 240, 255, 0.08)' }}>
+          <div className="sidebar-title-row">
+            <span className="glow-text" style={{ fontSize: '0.85rem', fontFamily: 'var(--font-header)', letterSpacing: '2px', fontWeight: 800 }}>
+              &gt; J.A.R.V.I.S. ANTENNA
+            </span>
+          </div>
+
+          <div className="milestone-details-box" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justify: 'center', alignItems: 'center', textAlign: 'center', gap: '15px' }}>
+            {status === 'idle' && (
+              <>
+                <div className="spec-indicator" style={{ width: '12px', height: '12px' }}></div>
+                <span style={{ fontFamily: 'var(--font-header)', fontSize: '0.8rem', letterSpacing: '1px' }}>ANTENNA READY</span>
+                <span style={{ fontSize: '0.7rem', color: '#8fa0b5' }}>WARNING: DO NOT TRANSMIT CLASSIFIED DATA. SECURE ENCRYPTION DETECTED.</span>
+              </>
+            )}
+            
+            {status === 'sending' && (
+              <>
+                <div style={{ width: '30px', height: '30px', border: '3px solid rgba(0,240,255,0.1)', borderTopColor: 'var(--color-core)', borderRadius: '50%', animation: 'spin-clockwise 1s linear infinite' }}></div>
+                <span style={{ fontFamily: 'var(--font-header)', fontSize: '0.8rem', letterSpacing: '1px', color: 'var(--color-core)' }}>CHARGING BEAMS...</span>
+                <span style={{ fontSize: '0.7rem', color: '#8fa0b5' }}>ENCRYPTING TELEMETRY DATA PACKAGE...</span>
+              </>
+            )}
+
+            {status === 'sent' && (
+              <>
+                <div className="spec-indicator" style={{ width: '12px', height: '12px', backgroundColor: '#2ecc71', boxShadow: '0 0 10px #2ecc71' }}></div>
+                <span style={{ fontFamily: 'var(--font-header)', fontSize: '0.8rem', letterSpacing: '1px', color: '#2ecc71' }}>TRANSMISSION COMPLETE</span>
+                <span style={{ fontSize: '0.7rem', color: '#8fa0b5' }}>Sir, the telemetry log has been successfully dispatched to Kishore's network core.</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
    MAIN SYSTEM APP COMPONENT
    ========================================================================== */
 function App() {
   const [viewState, setViewState] = useState('entrance'); // 'entrance', 'suit_up', 'active'
+  const [activeTab, setActiveTab] = useState('core'); // 'core', 'diagnostics', 'loadout', 'link'
   const [overloaded, setOverloaded] = useState(false);
   const [bootLogs, setBootLogs] = useState([]);
 
@@ -739,7 +1206,7 @@ function App() {
       )}
 
       {/* 2. Transition Suit-Up Animation (Sliding Armor Panels) */}
-      {(viewState === 'suit_up' || viewState === 'entrance' && false) && (
+      {viewState === 'suit_up' && (
         <div className={`armor-assembly-overlay ${viewState === 'suit_up' ? 'active' : ''}`}>
           <div className="armor-plate armor-plate-left"></div>
           <div className="armor-plate armor-plate-right"></div>
@@ -755,9 +1222,26 @@ function App() {
 
       {/* 3. Inside the Visor HUD (Main active command center) */}
       {viewState === 'active' && (
-        <div className="fade-in-up" style={{ animationDuration: '0.8s' }}>
-          <Header isOverloaded={overloaded} />
-          <Hero isOverloaded={overloaded} toggleOverload={toggleOverload} />
+        <div>
+          <Header isOverloaded={overloaded} activeTab={activeTab} setActiveTab={setActiveTab} />
+          
+          {activeTab === 'core' && (
+            <div className="fade-in-up" style={{ animationDuration: '0.8s' }}>
+              <Hero isOverloaded={overloaded} toggleOverload={toggleOverload} setActiveTab={setActiveTab} />
+            </div>
+          )}
+
+          {activeTab === 'diagnostics' && (
+            <Diagnostics isOverloaded={overloaded} />
+          )}
+
+          {activeTab === 'loadout' && (
+            <Loadout />
+          )}
+
+          {activeTab === 'link' && (
+            <ContactForm />
+          )}
         </div>
       )}
     </div>

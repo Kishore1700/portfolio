@@ -888,32 +888,397 @@ body.overloaded .overload-status-text {
 }
 
 /* ==========================================================================
+   J.A.R.V.I.S. OS — DIAGNOSTICS & SYSTEM UPGRADES (EDUCATION TIMELINE)
+   ========================================================================== */
+
+/* Page Viewport Wrapper */
+.hud-page-container {
+  width: 100%;
+  height: 100vh;
+  padding: 100px 50px 40px 50px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: page-fade-in 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index: 10;
+  position: relative;
+}
+
+@keyframes page-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Diagnostics Two-Column HUD Layout */
+.diagnostics-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 40px;
+  align-items: center;
+}
+
+/* Sidebar selectors */
+.milestones-sidebar {
+  height: 100%;
+  max-height: 550px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sidebar-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(var(--color-core-hsl), 0.2);
+  padding-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 5px;
+  flex-grow: 1;
+}
+
+.milestone-item {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(var(--color-core-hsl), 0.12);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  transition: all var(--transition-normal);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.milestone-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: background var(--transition-normal);
+}
+
+.milestone-item:hover {
+  background: rgba(var(--color-core-hsl), 0.04);
+  border-color: rgba(var(--color-core-hsl), 0.3);
+  transform: translateX(5px);
+}
+
+.milestone-item.active {
+  background: rgba(var(--color-core-hsl), 0.08);
+  border-color: var(--color-core);
+  box-shadow: 0 0 15px rgba(var(--color-core-hsl), 0.12);
+}
+
+.milestone-item.active::before {
+  background: var(--color-core);
+  box-shadow: 0 0 8px var(--color-core);
+}
+
+.milestone-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.milestone-mark {
+  font-family: var(--font-header);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-core);
+  letter-spacing: 2px;
+}
+
+.milestone-title {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.milestone-year {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-aux);
+}
+
+/* Details output shell */
+.milestone-details-box {
+  background: rgba(2, 3, 4, 0.4);
+  border: 1px solid rgba(var(--color-core-hsl), 0.15);
+  padding: 15px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #c4d0e0;
+  line-height: 1.6;
+  min-height: 140px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.milestone-details-box::before {
+  content: 'DIAGNOSTIC_REPORT';
+  position: absolute;
+  top: -8px;
+  left: 15px;
+  font-family: var(--font-header);
+  font-size: 0.55rem;
+  color: var(--color-aux);
+  background: var(--bg-secondary);
+  padding: 1px 8px;
+  border: 1px solid rgba(var(--color-aux-hsl), 0.25);
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   COMPONENT: CIRCULAR TELEMETRY GAUGES
+   ========================================================================== */
+.gauges-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid rgba(var(--color-core-hsl), 0.12);
+}
+
+.telemetry-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.gauge-svg {
+  transform: rotate(-90deg);
+  width: 65px;
+  height: 65px;
+}
+
+.gauge-bg-circle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.03);
+  stroke-width: 5;
+}
+
+.gauge-fill-circle {
+  fill: none;
+  stroke: var(--color-core);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.85s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.gauge-label {
+  font-family: var(--font-header);
+  font-size: 0.52rem;
+  letter-spacing: 1px;
+  color: rgba(164, 179, 198, 0.8);
+  text-transform: uppercase;
+}
+
+.gauge-text {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  fill: #fff;
+  text-anchor: middle;
+}
+
+/* ==========================================================================
+   COMPONENT: HOLOGRAPHIC PROJECTION VIEWER (3D SKEWED VIEW)
+   ========================================================================== */
+.holo-viewer-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  perspective: 1000px; /* Gives 3D depth to HUD projection */
+}
+
+.holo-projection-cone {
+  position: absolute;
+  bottom: 10px;
+  width: 180px;
+  height: 140px;
+  background: linear-gradient(to top, rgba(var(--color-core-hsl), 0.12), transparent);
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+  opacity: 0.5;
+  animation: cone-glow 4s infinite ease-in-out alternate;
+}
+
+@keyframes cone-glow {
+  from { opacity: 0.35; transform: scaleY(0.95); }
+  to { opacity: 0.6; transform: scaleY(1.05); }
+}
+
+.holo-display-deck {
+  width: 380px;
+  height: 380px;
+  position: relative;
+  transform: rotateX(25deg) rotateY(-5deg); /* Skews the board in 3D */
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Inner neon hologram rings */
+.holo-hologram-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--color-core-hsl), 0.12);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.holo-hologram-glow::before {
+  content: '';
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  border: 2px solid rgba(var(--color-aux-hsl), 0.08);
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: spin-clockwise 20s linear infinite;
+}
+
+.holo-hologram-glow::after {
+  content: '';
+  position: absolute;
+  width: 75%;
+  height: 75%;
+  border: 1px dashed rgba(var(--color-core-hsl), 0.22);
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: spin-counterclockwise 12s linear infinite;
+}
+
+/* SVG Schematic Graphics container */
+.holo-schematic-wrapper {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  animation: float-hologram 4s ease-in-out infinite;
+}
+
+@keyframes float-hologram {
+  0% { transform: translateY(0px) rotateZ(0deg); }
+  50% { transform: translateY(-12px) rotateZ(1deg); }
+  100% { transform: translateY(0px) rotateZ(0deg); }
+}
+
+.holo-schematic-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(var(--color-core-hsl), 0.65));
+}
+
+.schematic-glowing-path {
+  stroke: var(--color-core);
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: draw-path 3s ease forwards;
+}
+
+@keyframes draw-path {
+  to { stroke-dashoffset: 0; }
+}
+
+.schematic-rotating-ring {
+  transform-origin: center;
+  animation: spin-clockwise 30s linear infinite;
+}
+
+.schematic-core-node {
+  fill: #fff;
+  animation: pulse-node 2s infinite ease-in-out alternate;
+}
+
+@keyframes pulse-node {
+  from { opacity: 0.65; r: 6; }
+  to { opacity: 1; r: 9; }
+}
+
+.holo-status-label {
+  position: absolute;
+  top: 15px;
+  font-family: var(--font-header);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(var(--color-core-hsl), 0.3);
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: var(--color-core);
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
    RESPONSIVE SCALING
    ========================================================================== */
 @media (max-width: 992px) {
+  .hero-container, .hud-page-container {
+    padding: 110px 30px 40px 30px;
+    height: auto;
+    overflow-y: auto;
+  }
+  
   .hero-container {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
-    padding: 110px 30px 40px 30px;
     gap: 60px;
-    overflow-y: auto;
-    height: auto;
     align-items: start;
   }
+
+  .diagnostics-container {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
   
-  .command-console-panel {
+  .command-console-panel, .milestones-sidebar {
     max-height: none;
     height: auto;
     padding: 30px;
   }
   
-  .avatar-chassis-panel {
+  .avatar-chassis-panel, .holo-viewer-panel {
     height: auto;
     margin-top: 10px;
     margin-bottom: 60px;
   }
   
-  .avatar-shield-ring {
+  .avatar-shield-ring, .holo-display-deck {
     width: 340px;
     height: 340px;
   }
@@ -968,3 +1333,4 @@ body.overloaded .overload-status-text {
     justify-content: center;
   }
 }
+
