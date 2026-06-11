@@ -433,7 +433,7 @@ function CanvasGrid({ isOverloaded }) {
 /* ==========================================================================
    COMPONENT: SUIT ENTRANCE ARC REACTOR PORTAL (OUTSIDE THE SUIT)
    ========================================================================== */
-function SuitUpEntrance({ onSuitUp }) {
+function SuitUpEntrance({ onSuitUp, isZooming }) {
   const [hovering, setHovering] = useState(false);
 
   const handleMouseEnter = () => {
@@ -451,14 +451,19 @@ function SuitUpEntrance({ onSuitUp }) {
   };
 
   return (
-    <div className="suit-entrance-container">
+    <div className={`suit-entrance-container ${isZooming ? 'zoomed-out' : ''}`}>
       {/* Sleek outer Stark coordinate tags */}
       <div className="suit-entrance-hud-box">
         <span className="entrance-corner-label">STARK_IND_SYS // MK85</span>
         <span className="entrance-corner-label">COGNITIVE_GRID: ARMED</span>
       </div>
 
-      {/* Main Core Reactor Button */}
+      {/* 1. Header Text at the Top */}
+      <div className="entrance-title">
+        Welcome to the world of Kishore
+      </div>
+
+      {/* 2. Main Core Reactor Button in the Center */}
       <div 
         className="arc-reactor-portal"
         onMouseEnter={handleMouseEnter}
@@ -484,12 +489,102 @@ function SuitUpEntrance({ onSuitUp }) {
         <div className="reactor-core-repulsor"></div>
       </div>
 
-      <div className="arc-reactor-prompt-text">
-        {hovering ? 'INITIATING THREADS...' : 'ENGAGE ARC REACTOR'}
+      {/* 3. Button below the Arc Reactor */}
+      <div className="entrance-btn-container">
+        <button 
+          className="cyber-btn"
+          onClick={handleCoreClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{ fontSize: '1rem', padding: '12px 30px', letterSpacing: '3px' }}
+        >
+          {hovering ? 'ENGAGING CORE...' : 'ENTER COCKPIT'}
+        </button>
       </div>
-      <div className="arc-reactor-subtext">
-        PRESS CORE TO SECURE SUIT-UP LINK
+
+      <div className="arc-reactor-subtext" style={{ marginTop: '20px' }}>
+        PRESS BUTTON TO INITIATE SUIT-UP LINK
       </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   COMPONENT: HELMET VISOR COCKPIT HUD OVERLAY
+   ========================================================================== */
+function VisorMask() {
+  const [eyePos, setEyePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [telemetry, setTelemetry] = useState({
+    voltage: 85.4,
+    thrust: 92.1,
+    nav: 100.0,
+    o2: 98.2
+  });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setEyePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    const telemetryInterval = setInterval(() => {
+      setTelemetry(prev => ({
+        voltage: (82.0 + Math.random() * 8.0).toFixed(1),
+        thrust: (90.0 + Math.random() * 5.0).toFixed(1),
+        nav: (99.2 + Math.random() * 0.8).toFixed(1),
+        o2: (97.5 + Math.random() * 1.5).toFixed(1)
+      }));
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearInterval(telemetryInterval);
+    };
+  }, []);
+
+  return (
+    <div className="visor-mask-frame">
+      <div className="visor-mask-left"></div>
+      <div className="visor-mask-right"></div>
+      <div className="visor-mask-bottom"></div>
+      
+      <div className="visor-telemetry-left">
+        <div className="visor-telemetry-item">
+          <span>SYS_VOLTAGE: {telemetry.voltage}V</span>
+          <div className="telemetry-indicator-bar">
+            <div className="telemetry-indicator-fill" style={{ width: `${telemetry.voltage}%` }}></div>
+          </div>
+        </div>
+        <div className="visor-telemetry-item">
+          <span>THRUST_CAP: {telemetry.thrust}%</span>
+          <div className="telemetry-indicator-bar">
+            <div className="telemetry-indicator-fill" style={{ width: `${telemetry.thrust}%` }}></div>
+          </div>
+        </div>
+        <div className="visor-telemetry-item">
+          <span>COMMS: SECURE</span>
+        </div>
+      </div>
+
+      <div className="visor-telemetry-right">
+        <div className="visor-telemetry-item">
+          <div className="telemetry-indicator-bar">
+            <div className="telemetry-indicator-fill" style={{ width: `${telemetry.nav}%` }}></div>
+          </div>
+          <span>NAV_LINK: {telemetry.nav}%</span>
+        </div>
+        <div className="visor-telemetry-item">
+          <div className="telemetry-indicator-bar">
+            <div className="telemetry-indicator-fill" style={{ width: `${telemetry.o2}%` }}></div>
+          </div>
+          <span>O2_LEVEL: {telemetry.o2}%</span>
+        </div>
+        <div className="visor-telemetry-item">
+          <span>WEAPON_SYS: ARMED</span>
+        </div>
+      </div>
+      
+      <div className="visor-eye-reticle" style={{ left: `${eyePos.x}px`, top: `${eyePos.y}px` }}></div>
     </div>
   );
 }
@@ -843,6 +938,12 @@ function Diagnostics({ isOverloaded }) {
     setTimeout(() => {
       document.body.classList.remove('star-accelerate');
     }, 600);
+    
+    // Trigger temporary visor hud glitch and shake
+    document.body.classList.add('hud-glitch-shake');
+    setTimeout(() => {
+      document.body.classList.remove('hud-glitch-shake');
+    }, 500);
   };
 
   const current = milestones[activeM];
@@ -1148,37 +1249,17 @@ function ContactForm() {
    MAIN SYSTEM APP COMPONENT
    ========================================================================== */
 function App() {
-  const [viewState, setViewState] = useState('entrance'); // 'entrance', 'suit_up', 'active'
+  const [viewState, setViewState] = useState('entrance'); // 'entrance', 'zooming', 'active'
   const [activeTab, setActiveTab] = useState('core'); // 'core', 'diagnostics', 'loadout', 'link'
   const [overloaded, setOverloaded] = useState(false);
-  const [bootLogs, setBootLogs] = useState([]);
-
-  // J.A.R.V.I.S. fast compile logs inside visor
-  const STARK_VISOR_LOGS = [
-    "DIAGNOSTICS: STARK INDUSTRIES OS BOOT...",
-    "ARMOR: MARK 85 NANOTECH MOLECULAR LINKING... [OK]",
-    "POWER: NEW ELEMENT REACTOR CELLS INITIALIZED... [100%]",
-    "THRUSTERS: FLIGHT SYSTEMS CALIBRATED... [OK]",
-    "HUD: VISOR GLASS COATINGS SECURED... [OK]",
-    "J.A.R.V.I.S.: WELCOME BACK, SIR. CALIBRATION COMPLETE."
-  ];
 
   const triggerSuitUpSequence = () => {
-    setViewState('suit_up');
+    setViewState('zooming');
     
-    // Animate diagnostic logs fast on screen inside armor shells
-    let logIndex = 0;
-    const interval = setInterval(() => {
-      if (logIndex < STARK_VISOR_LOGS.length) {
-        setBootLogs(prev => [...prev, STARK_VISOR_LOGS[logIndex]]);
-        logIndex++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          setViewState('active');
-        }, 800); // Glitch completes, visor HUD fully fades in
-      }
-    }, 180);
+    // Zoom transition takes 1.3 seconds
+    setTimeout(() => {
+      setViewState('active');
+    }, 1300);
   };
 
   const toggleOverload = () => {
@@ -1200,29 +1281,11 @@ function App() {
       
       <CanvasGrid isOverloaded={overloaded} />
 
-      {/* 1. Outside the suit — Beautiful Central Arc Reactor Button */}
-      {viewState === 'entrance' && (
-        <SuitUpEntrance onSuitUp={triggerSuitUpSequence} />
-      )}
-
-      {/* 2. Transition Suit-Up Animation (Sliding Armor Panels) */}
-      {viewState === 'suit_up' && (
-        <div className={`armor-assembly-overlay ${viewState === 'suit_up' ? 'active' : ''}`}>
-          <div className="armor-plate armor-plate-left"></div>
-          <div className="armor-plate armor-plate-right"></div>
-          <div className="armor-static-glitch">
-            <div style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', letterSpacing: '2px', lineHeight: '2' }}>
-              {bootLogs.map((log, i) => (
-                <div key={i}>&gt; {log}</div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 3. Inside the Visor HUD (Main active command center) */}
-      {viewState === 'active' && (
-        <div>
+      {/* Render the cockpit content when zooming or active */}
+      {(viewState === 'zooming' || viewState === 'active') && (
+        <div className="page-fade-in" style={{ animationDuration: '0.8s' }}>
+          <VisorMask />
+          
           <Header isOverloaded={overloaded} activeTab={activeTab} setActiveTab={setActiveTab} />
           
           {activeTab === 'core' && (
@@ -1243,6 +1306,14 @@ function App() {
             <ContactForm />
           )}
         </div>
+      )}
+
+      {/* Render the entrance overlay when entrance or zooming */}
+      {(viewState === 'entrance' || viewState === 'zooming') && (
+        <SuitUpEntrance 
+          onSuitUp={triggerSuitUpSequence} 
+          isZooming={viewState === 'zooming'} 
+        />
       )}
     </div>
   );

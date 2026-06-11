@@ -33,7 +33,7 @@
   /* Fonts */
   --font-header: 'Orbitron', sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
-  --font-body: 'Rajdhani', sans-serif;
+  --font-body: 'Orbitron', sans-serif;
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -65,7 +65,7 @@ html, body {
   background-color: var(--bg-primary);
   color: #dfe6e9;
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: 16px;
   overflow: hidden;
   letter-spacing: 0.5px;
 }
@@ -1333,4 +1333,214 @@ body.overloaded .overload-status-text {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   J.A.R.V.I.S. OS — SEAMLESS ZOOM & VISOR COCKPIT HUD
+   ========================================================================== */
+
+/* Zooming classes for landing page transition */
+.entrance-title {
+  font-family: var(--font-header);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 5px;
+  text-shadow: 0 0 15px rgba(var(--accent-blue-hsl), 0.5);
+  text-transform: uppercase;
+  margin-bottom: 55px;
+  text-align: center;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.entrance-btn-container {
+  margin-top: 55px;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Dismissed suit state zoom triggers */
+.suit-entrance-container.zoomed-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s ease 0.5s;
+}
+
+.suit-entrance-container.zoomed-out .entrance-title {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+
+.suit-entrance-container.zoomed-out .entrance-btn-container {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.suit-entrance-container.zoomed-out .arc-reactor-portal {
+  transform: scale(9);
+  opacity: 0;
+  filter: brightness(5) blur(1px);
+  box-shadow: 0 0 120px rgba(0, 240, 255, 1);
+  transition: transform 1.3s cubic-bezier(0.76, 0, 0.24, 1),
+              opacity 0.8s ease 0.4s,
+              filter 0.8s ease 0.2s;
+}
+
+/* Visor Helmet Cockpit Overlay Frame */
+.visor-mask-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 90;
+  box-shadow: inset 0 0 100px rgba(var(--color-core-hsl), 0.15);
+  transition: box-shadow var(--transition-slow), border-color var(--transition-slow);
+}
+
+/* Semi-transparent helmet frame border cutouts */
+.visor-mask-left, .visor-mask-right {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  border-color: rgba(var(--color-core-hsl), 0.2);
+  border-style: solid;
+  transition: border-color var(--transition-normal);
+}
+
+.visor-mask-left {
+  left: 0;
+  border-width: 0 1px 0 0;
+  background: linear-gradient(90deg, rgba(var(--color-core-hsl), 0.02), transparent);
+}
+
+.visor-mask-right {
+  right: 0;
+  border-width: 0 0 0 1px;
+  background: linear-gradient(-90deg, rgba(var(--color-core-hsl), 0.02), transparent);
+}
+
+/* visor bottom cockpit structural arcs */
+.visor-mask-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  width: 90%;
+  height: 30px;
+  border-top: 1px solid rgba(var(--color-core-hsl), 0.25);
+  background: linear-gradient(0deg, rgba(var(--color-core-hsl), 0.03), transparent);
+  clip-path: polygon(0 100%, 12% 0, 88% 0, 100% 100%);
+  transition: border-color var(--transition-normal);
+}
+
+/* Visor active telemetry readouts */
+.visor-telemetry-left, .visor-telemetry-right {
+  position: absolute;
+  top: 120px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(var(--color-core-hsl), 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-shadow: 0 0 6px rgba(var(--color-core-hsl), 0.3);
+  transition: color var(--transition-normal);
+}
+
+.visor-telemetry-left {
+  left: 95px;
+}
+
+.visor-telemetry-right {
+  right: 95px;
+  text-align: right;
+  align-items: flex-end;
+}
+
+.visor-telemetry-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.telemetry-indicator-bar {
+  width: 40px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.telemetry-indicator-fill {
+  height: 100%;
+  background-color: var(--color-core);
+  width: 60%;
+  animation: telemetry-bar-wave 2s infinite ease-in-out alternate;
+}
+
+@keyframes telemetry-bar-wave {
+  from { width: 30%; }
+  to { width: 95%; }
+}
+
+/* Central visor targeting eye-tracking reticle */
+.visor-eye-reticle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(var(--color-aux-hsl), 0.35);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              top 0.15s cubic-bezier(0.25, 0.8, 0.25, 1),
+              border-color var(--transition-normal);
+  z-index: 95;
+  pointer-events: none;
+}
+
+.visor-eye-reticle::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-core);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px var(--color-core);
+  transition: background-color var(--transition-normal);
+}
+
+/* Combat mode visor screen shake tremors */
+@keyframes visor-shake-tremor {
+  0% { transform: translate(0, 0) scale(1); }
+  10% { transform: translate(-2px, -1px) rotate(-0.2deg); }
+  20% { transform: translate(-1px, 2px) rotate(0.2deg); }
+  30% { transform: translate(1px, 1px) rotate(0deg); }
+  40% { transform: translate(2px, -1px) rotate(-0.2deg); }
+  50% { transform: translate(-1px, 2px) rotate(0.2deg); }
+  60% { transform: translate(-2px, 1px) rotate(-0.2deg); }
+  70% { transform: translate(1px, 2px) rotate(0.2deg); }
+  85% { transform: translate(-2px, -1px) rotate(0deg); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+body.overloaded .visor-mask-frame {
+  animation: visor-shake-tremor 0.18s infinite;
+  box-shadow: inset 0 0 120px rgba(255, 0, 60, 0.22);
+}
+
+/* Suit Upgrade Calibration Shake & Glitch */
+.hud-glitch-shake .visor-mask-frame {
+  animation: visor-shake-tremor 0.1s infinite;
+  border-color: rgba(0, 240, 255, 0.6) !important;
+  box-shadow: inset 0 0 150px rgba(0, 240, 255, 0.4) !important;
+}
+
+/* Page fade-in/up utility for cockpit views */
+.fade-in-up {
+  animation: page-fade-in 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
 
