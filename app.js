@@ -446,7 +446,6 @@ function SuitUpEntrance({ onSuitUp, isZooming }) {
   };
 
   const handleCoreClick = () => {
-    playSound('unlock');
     onSuitUp();
   };
 
