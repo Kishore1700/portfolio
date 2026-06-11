@@ -764,14 +764,19 @@ function Hero({ isOverloaded, toggleOverload, setActiveTab }) {
         </div>
 
         <div className="avatar-shield-ring">
-          <div className="reactor-core-frame">
-            <img 
-              src="./assets/arc_reactor.png" 
-              alt="Stark Arc Reactor" 
-              className="reactor-core-image" 
-            />
-            <div className="reactor-status-hud glow-text">
-              {isOverloaded ? 'COMBAT OVERDRIVE' : 'STARK ARC stable'}
+          <div className="reactor-core-frame" style={{ flexDirection: 'column', gap: '20px' }}>
+            <div 
+              className="reactor-core-repulsor" 
+              style={{ 
+                width: '80px', 
+                height: '80px', 
+                position: 'static', 
+                boxShadow: isOverloaded ? '0 0 30px #ff003c' : '0 0 30px #00f0ff',
+                backgroundColor: isOverloaded ? 'rgba(255, 0, 60, 0.9)' : 'rgba(0, 240, 255, 0.9)'
+              }}
+            ></div>
+            <div className="reactor-status-hud glow-text" style={{ position: 'static' }}>
+              {isOverloaded ? 'COMBAT OVERDRIVE' : 'STARK CORE STABLE'}
             </div>
           </div>
         </div>
