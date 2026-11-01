@@ -11,7 +11,7 @@
   };
 </script>
 
-<footer class="relative border-t-4 border-black bg-[#000000] py-10 px-4">
+<footer class="relative border-t-4 border-black bg-[#000000] pt-10 pb-28 px-4">
   <div
     class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 z-10 relative"
   >
