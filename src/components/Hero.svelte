@@ -197,13 +197,6 @@
         >
           <Minecraft3DBlock />
         </div>
-
-        <div
-          class="border-t-2 border-black pt-3 mt-3 flex justify-between items-center text-[10px] font-silkscreen text-slate-400"
-        >
-          <span>ENGINE: WEBGL 3D VOXEL</span>
-          <span class="text-[#55FF55] font-bold drop-shadow-[0_0_8px_rgba(85,255,85,0.6)]">INTERACTIVE ●</span>
-        </div>
       </div>
     </div>
   </div>
