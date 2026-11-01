@@ -1,5 +1,5 @@
 <script>
-  import { ExternalLink, Layers, X, Flame } from "lucide-svelte";
+  import { ExternalLink, Layers, X, Flame, Shield, Box, Sparkles } from "lucide-svelte";
   import Icons from "./Icons.svelte";
 
   const projectsData = [
@@ -59,120 +59,109 @@
   let selectedProject = $state(null);
 </script>
 
-<section id="projects" class="relative py-24 px-4 overflow-hidden">
+<section id="projects" class="relative py-20 px-4 overflow-hidden">
   <div class="max-w-7xl mx-auto z-10 relative text-left">
     <!-- Section Heading -->
-    <div class="text-center mb-16">
+    <div class="text-center mb-14">
       <h2
-        class="font-display font-extrabold text-3xl sm:text-4xl text-white mb-2"
+        class="font-pixel text-2xl sm:text-3xl text-[#FFFF55] mc-text-shadow-gold mb-3"
       >
         FEATURED PROJECTS
       </h2>
       <div
-        class="h-[3px] w-[80px] bg-gradient-to-r from-cyan-400 to-purple-600 mx-auto rounded-full"
+        class="h-1 w-24 bg-[#55FF55] mx-auto border border-black shadow-[0_0_8px_#55FF55]"
       ></div>
     </div>
 
     <!-- Projects Layout -->
-    <div class="space-y-12">
-      <!-- Featured Project Showcase -->
+    <div class="space-y-10">
       {#each projectsData.filter((p) => p.featured) as project}
         <div
-          class="group relative rounded-3xl overflow-hidden glassmorphism border border-white/10 p-6 sm:p-8 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 hover:border-cyan-500/30 transition-all duration-500"
+          class="mc-container p-6 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#0c0d12] transition-transform duration-150 hover:scale-[1.01]"
         >
-          <!-- Highlight background glow -->
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          ></div>
-
-          <!-- Left Column: Visual Mockup of Application -->
+          <!-- Left Column: Minecraft Command Block Terminal Mockup -->
           <div class="lg:col-span-5 flex flex-col justify-center relative">
-            <div
-              class="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full"
-            ></div>
             {#if project.id === "nutrition-system"}
               <div
-                class="relative glassmorphism-light rounded-2xl border border-white/10 p-6 font-mono text-xs text-slate-300 space-y-4 shadow-xl"
+                class="mc-slot p-5 font-mono text-xs text-slate-300 space-y-4 bg-[#040507] border-2 border-black"
               >
                 <div
-                  class="flex items-center justify-between border-b border-white/5 pb-2"
+                  class="flex items-center justify-between border-b-2 border-black pb-2"
                 >
-                  <span class="text-cyan-400 font-bold flex items-center gap-1">
-                    <Flame class="w-3.5 h-3.5 animate-bounce" /> NUTRITION_ENGINE
+                  <span class="text-[#FF5555] font-pixel text-[10px] flex items-center gap-1">
+                    <Flame class="w-3.5 h-3.5 text-[#FF5555]" /> NUTRITION_BLOCK
                   </span>
-                  <span class="text-slate-500 text-[10px]">v1.0.2</span>
+                  <span class="text-[#FFFF55] text-[9px] font-silkscreen">RECIPE v1.0</span>
                 </div>
-                <div class="space-y-1">
-                  <p class="text-slate-500"># Input: food_image.jpg</p>
-                  <p class="text-green-400">&gt; Loading TensorFlow Model...</p>
-                  <p class="text-green-400">
-                    &gt; Object Detected: [Banana, Oats, Milk]
+                <div class="space-y-1 font-silkscreen text-[11px]">
+                  <p class="text-slate-500"># Input: food_image.png</p>
+                  <p class="text-[#55FF55]">&gt; Model: TensorFlow Loaded</p>
+                  <p class="text-[#55FF55]">
+                    &gt; Item: [Banana, Oats, Milk]
                   </p>
-                  <p class="text-green-400">
-                    &gt; Portions: 1x Medium, 50g, 200ml
+                  <p class="text-[#55FF55]">
+                    &gt; Portion: 1x Med, 50g, 200ml
                   </p>
                 </div>
                 <div
-                  class="border-t border-white/5 pt-3 mt-2 grid grid-cols-2 gap-2 text-slate-400"
+                  class="border-t-2 border-black pt-3 mt-2 grid grid-cols-2 gap-2 font-mono text-[11px]"
                 >
-                  <div>
-                    <p class="text-[10px] text-slate-500">CALORIES</p>
-                    <p class="text-sm font-bold text-white">420 kcal</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#FFFF55] font-silkscreen">CALORIES</p>
+                    <p class="font-bold text-white">420 kcal</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">PROTEIN</p>
-                    <p class="text-sm font-bold text-cyan-300">14.5 g</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#55FFFF] font-silkscreen">PROTEIN</p>
+                    <p class="font-bold text-[#55FFFF]">14.5 g</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">CARBS</p>
-                    <p class="text-sm font-bold text-yellow-300">68 g</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#FFFF55] font-silkscreen">CARBS</p>
+                    <p class="font-bold text-[#FFFF55]">68 g</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">FATS</p>
-                    <p class="text-sm font-bold text-purple-300">8.2 g</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#AA00AA] font-silkscreen">FATS</p>
+                    <p class="font-bold text-[#AA00AA]">8.2 g</p>
                   </div>
                 </div>
               </div>
             {:else}
               <div
-                class="relative glassmorphism-light rounded-2xl border border-white/10 p-6 font-mono text-xs text-slate-300 space-y-4 shadow-xl"
+                class="mc-slot p-5 font-mono text-xs text-slate-300 space-y-4 bg-[#040507] border-2 border-black"
               >
                 <div
-                  class="flex items-center justify-between border-b border-white/5 pb-2"
+                  class="flex items-center justify-between border-b-2 border-black pb-2"
                 >
                   <span
-                    class="text-purple-400 font-bold flex items-center gap-1"
+                    class="text-[#55FFFF] font-pixel text-[10px] flex items-center gap-1"
                   >
-                    <Layers class="w-3.5 h-3.5" /> CAMPUS_REPO
+                    <Layers class="w-3.5 h-3.5 text-[#55FFFF]" /> CAMPUS_CHEST
                   </span>
-                  <span class="text-slate-500 text-[10px]">v5.0.0</span>
+                  <span class="text-[#FFFF55] text-[9px] font-silkscreen">SVELTE v5.0</span>
                 </div>
-                <div class="space-y-1">
-                  <p class="text-slate-500"># Session: JWT encrypted</p>
-                  <p class="text-green-400">&gt; Authenticating user...</p>
-                  <p class="text-green-400">&gt; HTTP-only cookies: Set</p>
-                  <p class="text-green-400">&gt; Firebase Storage: Connected</p>
+                <div class="space-y-1 font-silkscreen text-[11px]">
+                  <p class="text-slate-500"># Session: JWT Encrypted</p>
+                  <p class="text-[#55FF55]">&gt; Auth: User Verified</p>
+                  <p class="text-[#55FF55]">&gt; Cookie: HTTP-Only Active</p>
+                  <p class="text-[#55FF55]">&gt; Firestore: Online</p>
                 </div>
                 <div
-                  class="border-t border-white/5 pt-3 mt-2 grid grid-cols-2 gap-2 text-slate-400"
+                  class="border-t-2 border-black pt-3 mt-2 grid grid-cols-2 gap-2 font-mono text-[11px]"
                 >
-                  <div>
-                    <p class="text-[10px] text-slate-500">DATABASE</p>
-                    <p class="text-sm font-bold text-white">Firestore</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#FFFF55] font-silkscreen">DATABASE</p>
+                    <p class="font-bold text-white">Firestore</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">CSS FRAMEWORK</p>
-                    <p class="text-sm font-bold text-cyan-300">Tailwind</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#55FFFF] font-silkscreen">STYLES</p>
+                    <p class="font-bold text-[#55FFFF]">Tailwind</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">ROUTING</p>
-                    <p class="text-sm font-bold text-yellow-300">SvelteKit</p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#FFFF55] font-silkscreen">FRAMEWORK</p>
+                    <p class="font-bold text-[#FFFF55]">SvelteKit</p>
                   </div>
-                  <div>
-                    <p class="text-[10px] text-slate-500">SECURITY</p>
-                    <p class="text-sm font-bold text-purple-300">
-                      HTTP-only / Rules
-                    </p>
+                  <div class="mc-slot p-2 bg-[#090a0f]">
+                    <p class="text-[9px] text-[#FF5555] font-silkscreen">SECURITY</p>
+                    <p class="font-bold text-[#FF5555]">JWT Rules</p>
                   </div>
                 </div>
               </div>
@@ -183,23 +172,24 @@
           <div class="lg:col-span-7 flex flex-col justify-between text-left">
             <div>
               <div
-                class="inline-block px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 text-xs font-mono mb-4 uppercase tracking-wider"
+                class="inline-block px-2.5 py-1 mc-slot bg-[#000000] text-[#FFFF55] font-pixel text-[9px] mb-3 border-2 border-black"
               >
-                Featured Project
+                EPIC ITEM QUEST
               </div>
               <h3
-                class="font-display font-extrabold text-2xl sm:text-3xl text-white mb-4 group-hover:text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-cyan-300 transition-all duration-300"
+                class="font-pixel text-lg sm:text-xl text-white mb-3 mc-text-shadow"
               >
                 {project.title}
               </h3>
-              <p class="text-slate-300 text-base leading-relaxed mb-6">
+              <p class="text-slate-300 text-sm leading-relaxed mb-5 font-sans">
                 {project.description}
               </p>
 
-              <div class="flex flex-wrap gap-2 mb-8">
+              <!-- Tags as Inventory Slot Badges -->
+              <div class="flex flex-wrap gap-2 mb-6">
                 {#each project.tags as tag}
                   <span
-                    class="px-3 py-1 rounded-lg bg-slate-900 border border-white/5 text-slate-400 text-xs font-mono"
+                    class="px-2.5 py-1 mc-slot bg-[#040507] text-[#55FF55] text-[11px] font-silkscreen border border-black/80"
                   >
                     {tag}
                   </span>
@@ -207,19 +197,20 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex flex-wrap items-center gap-3">
               <button
                 onclick={() => (selectedProject = project)}
-                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-medium text-sm transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                class="mc-button text-xs px-5 py-3 text-white"
               >
-                View Details & Architecture
+                INSPECT RECIPE & ARCHITECTURE
               </button>
               {#if project.github}
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-500/30 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                  title="View Source on GitHub"
+                  class="w-10 h-10 mc-slot flex items-center justify-center text-[#55FFFF] hover:scale-105"
                 >
                   <Icons type="github" class="w-5 h-5" />
                 </a>
@@ -230,64 +221,74 @@
       {/each}
     </div>
 
-    <!-- Project Details Modal -->
+    <!-- Project Details Modal styled as Minecraft Recipe Scroll -->
     {#if selectedProject}
-      <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity duration-300"
-      >
+      <div class="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <!-- Backdrop Button -->
+        <button
+          type="button"
+          class="fixed inset-0 bg-black/85 backdrop-blur-sm border-none cursor-pointer w-full h-full p-0"
+          aria-label="Close project modal backdrop"
+          onclick={() => (selectedProject = null)}
+        ></button>
+
+        <!-- Modal Dialog Content -->
         <div
-          class="w-full max-w-2xl rounded-2xl glassmorphism border border-white/10 p-6 sm:p-8 relative overflow-y-auto max-h-[90vh] shadow-2xl"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          class="w-full max-w-2xl mc-container bg-[#0c0d12] p-6 sm:p-8 relative z-10 overflow-y-auto max-h-[90vh]"
         >
           <!-- Close Button -->
           <button
             onclick={() => (selectedProject = null)}
-            class="absolute top-4 right-4 p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors focus:outline-none cursor-pointer"
+            class="absolute top-4 right-4 mc-button p-1.5 text-[#FF5555]"
           >
-            <X class="w-5 h-5" />
+            <X class="w-4 h-4" />
           </button>
 
           <!-- Modal Content -->
-          <div class="text-left space-y-6">
+          <div class="text-left space-y-5">
             <div>
               <span
-                class="text-xs font-mono text-cyan-400 tracking-widest uppercase"
+                class="text-[10px] font-pixel text-[#FFFF55] uppercase tracking-wider mc-text-shadow-gold"
               >
                 {selectedProject.category}
               </span>
               <h3
-                class="font-display font-bold text-2xl sm:text-3xl text-white mt-1"
+                class="font-pixel text-base sm:text-xl text-white mt-1 mc-text-shadow"
               >
                 {selectedProject.title}
               </h3>
             </div>
 
-            <div class="border-t border-white/5 pt-4">
+            <div class="border-t-2 border-black pt-4">
               <h4
-                class="text-sm font-semibold text-slate-300 uppercase tracking-wide mb-2"
+                class="text-xs font-pixel text-[#55FF55] uppercase mb-2 mc-text-shadow-green"
               >
-                Project Overview
+                PROJECT QUEST OVERVIEW
               </h4>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <p class="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
                 {selectedProject.longDesc}
               </p>
             </div>
 
-            <div class="border-t border-white/5 pt-4">
+            <div class="border-t-2 border-black pt-4">
               <h4
-                class="text-sm font-semibold text-slate-300 uppercase tracking-wide mb-3"
+                class="text-xs font-pixel text-[#55FFFF] uppercase mb-3 mc-text-shadow-diamond"
               >
-                Key Features & Metrics
+                STATISTICS & STAT BUFFS
               </h4>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {#each selectedProject.metrics as metric}
                   <div
-                    class="p-4 rounded-xl bg-white/5 border border-white/5 flex items-start gap-2.5"
+                    class="p-3 mc-slot bg-[#040507] flex items-start gap-2.5"
                   >
                     <span
-                      class="mt-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0"
+                      class="mt-1 w-2 h-2 bg-[#55FF55] shrink-0"
                     ></span>
                     <span
-                      class="text-xs sm:text-sm text-slate-300 leading-relaxed"
+                      class="text-xs text-slate-200 font-silkscreen leading-relaxed"
                       >{metric}</span
                     >
                   </div>
@@ -297,24 +298,24 @@
 
             <!-- Footer links in modal -->
             <div
-              class="border-t border-white/5 pt-6 mt-6 flex justify-end gap-3"
+              class="border-t-2 border-black pt-5 mt-5 flex justify-end gap-3"
             >
               {#if selectedProject.github}
                 <a
                   href={selectedProject.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="px-5 py-2.5 rounded-xl border border-white/10 hover:border-cyan-500/40 bg-white/5 hover:bg-cyan-500/10 text-slate-300 hover:text-white font-medium text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer"
+                  class="mc-button mc-button-gold text-xs px-4 py-2.5 flex items-center gap-2"
                 >
-                  <Icons type="github" class="w-4 h-4" />
-                  <span>GitHub Repository</span>
+                  <Icons type="github" class="w-4 h-4 text-[#55FFFF]" />
+                  <span>GITHUB CHEST</span>
                 </a>
               {/if}
               <button
                 onclick={() => (selectedProject = null)}
-                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium text-xs sm:text-sm hover:scale-[1.02] transition-transform cursor-pointer"
+                class="mc-button text-xs px-4 py-2.5 text-white"
               >
-                Close Details
+                CLOSE SCROLL
               </button>
             </div>
           </div>

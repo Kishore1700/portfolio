@@ -1,112 +1,244 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Orbitron', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-vt: 'VT323', monospace;
+  --font-silkscreen: 'Silkscreen', monospace;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     font-family: var(--font-sans);
-    background-color: #030014;
-    color: #e2e8f0;
+    background-color: #000000;
+    color: #f1f5f9;
     overflow-x: hidden;
   }
 
   body {
-    background-color: #030014;
+    background-color: #000000;
     overflow-x: hidden;
     position: relative;
+    min-height: 100vh;
   }
 
-  /* Custom Scrollbar */
+  /* Custom Pixelated Scrollbar - OLED Tuned */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #030014;
+    background: #000000;
+    border-left: 2px solid #14151c;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e1b4b;
-    border-radius: 4px;
-    border: 2px solid #030014;
+    background: #1c1e26;
+    box-shadow: inset -2px -2px 0px #08090c, inset 2px 2px 0px #353847;
+    border: 2px solid #000000;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
+    background: #55FF55;
+    box-shadow: inset -2px -2px 0px #1e661e, inset 2px 2px 0px #88ff88, 0 0 10px rgba(85, 255, 85, 0.7);
   }
 }
 
-/* Glassmorphism utility */
-.glassmorphism {
-  background: rgba(10, 7, 32, 0.45);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* Minecraft Fonts */
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: -0.05em;
 }
 
-.glassmorphism-light {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+.font-vt {
+  font-family: 'VT323', monospace;
 }
 
-/* Glowing utilities */
-.glow-text-purple {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+.font-silkscreen {
+  font-family: 'Silkscreen', monospace;
 }
 
-.glow-text-blue {
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.glow-text-cyan {
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
-}
-
-.glow-border {
+/* Minecraft GUI Frame - OLED Deep Obsidian */
+.mc-container {
+  background-color: #0c0d12;
+  box-shadow: 
+    inset -4px -4px 0px 0px #040507, 
+    inset 4px 4px 0px 0px #22242f, 
+    0 0 0 4px #000000;
   position: relative;
 }
 
-.glow-border::after {
+.mc-container-light {
+  background-color: #14161f;
+  box-shadow: 
+    inset -3px -3px 0px 0px #08090d, 
+    inset 3px 3px 0px 0px #2c2f3d, 
+    0 0 0 3px #000000;
+}
+
+.mc-container-gold {
+  background-color: #0c0d12;
+  box-shadow: 
+    inset -4px -4px 0px 0px #705408, 
+    inset 4px 4px 0px 0px #ffd700, 
+    0 0 0 4px #000000,
+    0 0 16px rgba(255, 215, 0, 0.15);
+}
+
+.mc-container-diamond {
+  background-color: #070d12;
+  box-shadow: 
+    inset -4px -4px 0px 0px #0a3540, 
+    inset 4px 4px 0px 0px #55ffff, 
+    0 0 0 4px #000000,
+    0 0 16px rgba(85, 255, 255, 0.15);
+}
+
+/* Minecraft 3D Stone Button - OLED High Contrast */
+.mc-button {
+  background-color: #24252e;
+  box-shadow: 
+    inset -3px -3px 0px 0px #111216, 
+    inset 3px 3px 0px 0px #3f4150, 
+    0 0 0 3px #000000;
+  color: #f1f5f9;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 2px 2px 0px #000000;
+  transition: all 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mc-button:hover {
+  background-color: #226b22;
+  box-shadow: 
+    inset -3px -3px 0px 0px #0f3d0f, 
+    inset 3px 3px 0px 0px #55FF55, 
+    0 0 0 3px #000000,
+    0 0 12px rgba(85, 255, 85, 0.45);
+  color: #ffffff;
+  text-shadow: 2px 2px 0px #003300;
+}
+
+.mc-button:active {
+  background-color: #174a17;
+  box-shadow: 
+    inset 3px 3px 0px 0px #091f09, 
+    inset -3px -3px 0px 0px #3ea63e, 
+    0 0 0 3px #000000;
+  transform: translateY(2px);
+}
+
+.mc-button-gold {
+  background-color: #8c6708;
+  box-shadow: 
+    inset -3px -3px 0px 0px #4d3804, 
+    inset 3px 3px 0px 0px #ffd700, 
+    0 0 0 3px #000000,
+    0 0 12px rgba(255, 215, 0, 0.35);
+  color: #ffffff;
+}
+
+.mc-button-gold:hover {
+  background-color: #b8860b;
+  box-shadow: 
+    inset -3px -3px 0px 0px #705408, 
+    inset 3px 3px 0px 0px #ffff55, 
+    0 0 0 3px #000000,
+    0 0 16px rgba(255, 255, 85, 0.5);
+}
+
+/* Minecraft Inventory Slot Box - OLED Deep Well */
+.mc-slot {
+  background-color: #050608;
+  box-shadow: 
+    inset 3px 3px 0px 0px #000000, 
+    inset -3px -3px 0px 0px #181a22, 
+    0 0 0 2px #000000;
+  position: relative;
+}
+
+.mc-slot:hover, .mc-slot.active {
+  box-shadow: 
+    inset 3px 3px 0px 0px #000000, 
+    inset -3px -3px 0px 0px #181a22, 
+    0 0 0 2px #55FF55,
+    0 0 10px rgba(85, 255, 85, 0.4);
+}
+
+/* Enchanted Item Shimmer Glow */
+.mc-enchanted {
+  position: relative;
+  overflow: hidden;
+}
+
+.mc-enchanted::after {
   content: '';
   position: absolute;
-  inset: -1px;
-  background: linear-gradient(90deg, #a855f7, #3b82f6, #06b6d4, #a855f7);
-  background-size: 300% 300%;
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  animation: borderGlow 6s ease infinite;
+  inset: 0;
+  background: linear-gradient(
+    135deg, 
+    rgba(170, 0, 255, 0) 0%, 
+    rgba(170, 0, 255, 0.35) 40%, 
+    rgba(85, 255, 255, 0.5) 50%, 
+    rgba(170, 0, 255, 0.35) 60%, 
+    rgba(170, 0, 255, 0) 100%
+  );
+  background-size: 200% 200%;
+  animation: mcEnchantShimmer 3s ease infinite;
+  pointer-events: none;
 }
 
-.glow-border:hover::after {
-  opacity: 1;
+@keyframes mcEnchantShimmer {
+  0% { background-position: -100% -100%; }
+  100% { background-position: 200% 200%; }
 }
 
-@keyframes borderGlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+/* XP Bar - OLED Vibrant Neon */
+.mc-xp-container {
+  background-color: #000000;
+  border: 3px solid #000000;
+  box-shadow: inset 2px 2px 0px 0px #030602, 0 0 0 1px #0e1e07;
+  height: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Custom background grid animation */
-.bg-grid-pattern {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+.mc-xp-fill {
+  background: linear-gradient(90deg, #44ee44 0%, #76ff03 100%);
+  height: 100%;
+  box-shadow: inset 0px 2px 0px 0px #b2ff59, inset 0px -2px 0px 0px #1b5e20, 0 0 12px rgba(85, 255, 85, 0.5);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Minecraft Text Shadow Utility */
+.mc-text-shadow {
+  text-shadow: 2px 2px 0px #000000;
+}
+
+.mc-text-shadow-green {
+  text-shadow: 2px 2px 0px #092e09;
+}
+
+.mc-text-shadow-gold {
+  text-shadow: 2px 2px 0px #423000;
+}
+
+.mc-text-shadow-diamond {
+  text-shadow: 2px 2px 0px #003838;
+}
+
+/* Floating Pixel Items Animation */
+@keyframes pixelFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.mc-float {
+  animation: pixelFloat 3s ease-in-out infinite;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -116,3 +248,90 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Minecraft Floating XP / Level Up Text */
+@keyframes floatUpFade {
+  0% {
+    transform: translateY(0px) scale(0.9);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-8px) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(1);
+    opacity: 0;
+  }
+}
+
+.mc-float-text {
+  animation: floatUpFade 1.2s ease-out forwards;
+  pointer-events: none;
+  position: absolute;
+  z-index: 50;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 2px 2px 0px #000000;
+}
+
+/* Minecraft Authentic Lore Tooltip - OLED Rich Purple */
+.mc-tooltip {
+  background-color: #06000a;
+  background-image: linear-gradient(180deg, rgba(14, 0, 22, 0.98), rgba(4, 0, 8, 0.98));
+  border: 2px solid #240047;
+  box-shadow: 
+    0 0 0 2px #000000, 
+    inset 1px 1px 0px #6b11cc, 
+    inset -1px -1px 0px #140026,
+    0 8px 30px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(107, 17, 204, 0.3);
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* Minecraft Item Crafting Grid */
+.mc-crafting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  background-color: #1a1b24;
+  padding: 6px;
+  border: 3px solid #000000;
+  box-shadow: inset 2px 2px 0px #0c0d12, inset -2px -2px 0px #303342;
+}
+
+.mc-crafting-slot {
+  aspect-ratio: 1 / 1;
+  background-color: #8b8b8b;
+  box-shadow: 
+    inset 2px 2px 0px 0px #373737, 
+    inset -2px -2px 0px 0px #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.1s;
+}
+
+.mc-crafting-slot:hover {
+  filter: brightness(1.15);
+}
+
+.mc-crafting-output {
+  aspect-ratio: 1 / 1;
+  background-color: #8b8b8b;
+  box-shadow: 
+    inset 3px 3px 0px 0px #373737, 
+    inset -3px -3px 0px 0px #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.mc-crafting-output:hover {
+  filter: brightness(1.2);
+}
+

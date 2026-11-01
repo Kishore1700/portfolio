@@ -12,34 +12,72 @@
   import Footer from './components/Footer.svelte';
 </script>
 
-<div class="relative min-h-screen text-slate-100 bg-[#030014] font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+<div class="relative min-h-screen text-slate-100 font-sans selection:bg-[#55FF55]/30 selection:text-[#55FF55]">
   <SpotlightBg />
   <Navbar />
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-12">
+  <div class="relative z-10">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 pb-16 pt-6">
     <Hero />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <!-- Minecraft Pixel Divider Line -->
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#55FF55] rotate-45 shadow-[0_0_8px_#55FF55]"></div>
+      </div>
+    </div>
+    
     <About />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#55FFFF] rotate-45 shadow-[0_0_8px_#55FFFF]"></div>
+      </div>
+    </div>
+
     <Skills />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#FFFF55] rotate-45 shadow-[0_0_8px_#FFFF55]"></div>
+      </div>
+    </div>
+
     <Projects />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#FF5555] rotate-45 shadow-[0_0_8px_#FF5555]"></div>
+      </div>
+    </div>
+
     <Internship />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#AA00AA] rotate-45 shadow-[0_0_8px_#AA00AA]"></div>
+      </div>
+    </div>
+
     <Education />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#55FF55] rotate-45 shadow-[0_0_8px_#55FF55]"></div>
+      </div>
+    </div>
+
     <Certifications />
 
-    <div class="h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent my-4"></div>
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#55FFFF] rotate-45 shadow-[0_0_8px_#55FFFF]"></div>
+      </div>
+    </div>
+
     <ThankYou />
   </main>
 
-  <Footer />
+    <Footer />
+  </div>
 </div>

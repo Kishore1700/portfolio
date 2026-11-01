@@ -1,16 +1,17 @@
 <script>
   import { onMount } from "svelte";
-  import { Menu, X, Terminal, FileText } from "lucide-svelte";
+  import { Menu, X, FileText, Pickaxe } from "lucide-svelte";
   import resumeUrl from "../../Kishore_Resume.pdf";
+  import { sound } from "../utils/sound.js";
 
   const navItems = [
-    { name: "Home", href: "#home" },
-    { name: "About", href: "#about" },
-    { name: "Skills", href: "#skills" },
-    { name: "Projects", href: "#projects" },
-    { name: "Internship", href: "#internship" },
-    { name: "Education", href: "#education" },
-    { name: "Certifications", href: "#certifications" },
+    { name: "HOME", href: "#home", slot: 1 },
+    { name: "ABOUT", href: "#about", slot: 2 },
+    { name: "SKILLS", href: "#skills", slot: 3 },
+    { name: "PROJECTS", href: "#projects", slot: 4 },
+    { name: "INTERNSHIP", href: "#internship", slot: 5 },
+    { name: "EDUCATION", href: "#education", slot: 6 },
+    { name: "CERTIFICATIONS", href: "#certifications", slot: 7 },
   ];
 
   let isOpen = $state(false);
@@ -19,35 +20,38 @@
 
   onMount(() => {
     const handleScroll = () => {
-      scrolled = window.scrollY > 20;
+      scrolled = window.scrollY > 15;
 
-      const sections = navItems.map((item) => item.href.substring(1));
-      let currentSection = "home";
-      for (const section of sections) {
-        const el = document.getElementById(section);
+      const scrollPos = window.scrollY + 140;
+      let current = "home";
+
+      for (const item of navItems) {
+        const id = item.href.substring(1);
+        const el = document.getElementById(id);
         if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 160) {
-            currentSection = section;
+          const top = el.offsetTop;
+          if (top <= scrollPos) {
+            current = id;
           }
         }
       }
-      activeSection = currentSection;
+      activeSection = current;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
     return () => window.removeEventListener("scroll", handleScroll);
   });
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
+    sound.playClick();
     const id = href.substring(1);
     const element = document.getElementById(id);
     if (element) {
       const offset = 80;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
       const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
@@ -60,91 +64,119 @@
   };
 </script>
 
+<!-- The Navbar: Permanently fixed at the top across all sections and scrolling locations -->
 <nav
-  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 {scrolled
-    ? 'glassmorphism py-3 shadow-lg shadow-black/20'
-    : 'bg-transparent py-5'}"
+  style="position: fixed !important; top: 0; left: 0; right: 0; z-index: 9999 !important;"
+  class="bg-[#000000]/95 border-b-4 border-black shadow-[0_6px_24px_rgba(0,0,0,1)] transition-all duration-200 {scrolled
+    ? 'py-2'
+    : 'py-2.5 sm:py-3'}"
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <!-- Logo -->
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-12 sm:h-14">
+      
+      <!-- Logo: Minecraft Title -->
       <button
-        class="flex items-center gap-2 cursor-pointer font-display font-bold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 border-none bg-transparent"
-        onclick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        type="button"
+        class="flex items-center gap-2 cursor-pointer border-none bg-transparent group shrink-0"
+        onclick={() => {
+          sound.playClick();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       >
-        <Terminal class="w-6 h-6 text-cyan-400 animate-pulse" />
-        <span>KISHORE P M</span>
+        <div class="w-8 h-8 mc-slot flex items-center justify-center bg-[#0c0d12] text-[#55FF55] group-hover:scale-105 transition-transform">
+          <Pickaxe class="w-4 h-4 text-[#55FF55]" />
+        </div>
+        <span class="font-pixel text-[11px] sm:text-xs md:text-sm text-[#FFFF55] mc-text-shadow-gold tracking-tight">
+          KISHORE <span class="text-[#55FF55]">P M</span>
+        </span>
       </button>
 
-      <!-- Desktop Nav Items -->
-      <div class="hidden lg:flex items-center gap-1">
+      <!-- Desktop & Tablet Minecraft Hotbar Navigation -->
+      <div class="hidden md:flex items-center gap-1 lg:gap-1.5 bg-[#000000] p-1 lg:p-1.5 mc-slot border border-black">
         {#each navItems as item}
           {@const isActive = activeSection === item.href.substring(1)}
           <a
             href={item.href}
             onclick={(e) => handleNavClick(e, item.href)}
-            class="relative px-4 py-2 rounded-full text-sm font-medium tracking-wide transition-colors duration-300 {isActive
-              ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30'
-              : 'text-slate-400 hover:text-white'}"
+            class="relative px-2 lg:px-3 py-1.5 text-[10px] lg:text-[11px] font-silkscreen transition-all duration-150 flex items-center gap-1.5 {isActive
+              ? 'mc-slot active bg-[#0e1017] text-[#55FF55] mc-text-shadow-green font-bold scale-105 z-10 shadow-[0_0_12px_#55FF55]/50'
+              : 'text-slate-300 hover:text-white hover:bg-[#0c0d12]'}"
           >
-            {item.name}
+            <span class="text-[9px] text-[#FFFF55]/80 font-mono">{item.slot}</span>
+            <span>{item.name}</span>
           </a>
         {/each}
 
+        <!-- Resume Button styled as Minecraft Stone Button -->
         <a
           href={resumeUrl}
           download="Kishore_Resume.pdf"
-          class="ml-2 px-4 py-2 rounded-full text-sm font-medium tracking-wide border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-500/10"
+          onclick={() => sound.playClick()}
+          class="mc-button text-[10px] px-2.5 lg:px-3 py-1.5 ml-1 text-[#FFFF55]"
+          title="Download Kishore's Resume (PDF)"
         >
-          <FileText class="w-4 h-4 text-cyan-400" />
+          <FileText class="w-3.5 h-3.5 mr-1 text-[#55FFFF]" />
           <span>Resume</span>
         </a>
       </div>
 
-      <!-- Mobile menu toggle -->
-      <div class="flex lg:hidden">
+      <!-- Mobile Active Section Pill + Menu Toggle -->
+      <div class="flex items-center gap-2 md:hidden">
+        <!-- Shows active section on mobile header -->
+        <span class="text-[9px] font-pixel px-2 py-1 bg-[#0c0d12] text-[#55FF55] mc-slot border border-black">
+          {activeSection.toUpperCase()}
+        </span>
+
         <button
-          onclick={() => (isOpen = !isOpen)}
-          class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/40 focus:outline-none transition-colors"
+          type="button"
+          onclick={() => {
+            sound.playClick();
+            isOpen = !isOpen;
+          }}
+          class="mc-button p-2 text-slate-200 cursor-pointer"
+          aria-label="Toggle Navigation Menu"
         >
           {#if isOpen}
-            <X class="h-6 w-6" />
+            <X class="h-5 w-5" />
           {:else}
-            <Menu class="h-6 w-6" />
+            <Menu class="h-5 w-5" />
           {/if}
         </button>
       </div>
+
     </div>
   </div>
 
-  <!-- Mobile Menu Panel -->
+  <!-- Mobile Menu Panel styled as Minecraft Inventory GUI -->
   {#if isOpen}
     <div
-      class="lg:hidden glassmorphism border-t border-white/5 overflow-hidden transition-all duration-300"
+      class="md:hidden mc-container border-t-2 border-black mt-2 p-3 space-y-2 bg-[#0c0d12]/98 backdrop-blur-md"
     >
-      <div class="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+      <div class="grid grid-cols-2 gap-2">
         {#each navItems as item}
           {@const isActive = activeSection === item.href.substring(1)}
           <a
             href={item.href}
             onclick={(e) => handleNavClick(e, item.href)}
-            class="block px-4 py-3 rounded-xl text-base font-medium transition-all {isActive
-              ? 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-cyan-400 border-l-2 border-cyan-400 pl-3'
-              : 'text-slate-400 hover:text-white hover:bg-white/5'}"
+            class="mc-slot p-2.5 text-xs font-silkscreen flex items-center gap-2 {isActive
+              ? 'bg-[#14161f] text-[#55FF55] border-2 border-[#55FF55] font-bold shadow-[0_0_10px_#55FF55]/40'
+              : 'text-slate-300 hover:bg-[#0a0b0f]'}"
           >
-            {item.name}
+            <span class="text-[10px] text-[#FFFF55] font-mono">[{item.slot}]</span>
+            <span>{item.name}</span>
           </a>
         {/each}
-
-        <a
-          href={resumeUrl}
-          download="Kishore_Resume.pdf"
-          class="flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 mt-2"
-        >
-          <FileText class="w-5 h-5 text-cyan-400" />
-          <span>Download Resume</span>
-        </a>
       </div>
+
+      <a
+        href={resumeUrl}
+        download="Kishore_Resume.pdf"
+        onclick={() => sound.playClick()}
+        class="mc-button w-full text-xs py-2 text-[#FFFF55] mt-2 flex items-center justify-center gap-2"
+      >
+        <FileText class="w-4 h-4 text-[#55FFFF]" />
+        <span>Download Resume (.pdf)</span>
+      </a>
     </div>
   {/if}
 </nav>

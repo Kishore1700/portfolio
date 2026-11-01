@@ -1,5 +1,5 @@
 <script>
-  import { GraduationCap, Calendar, MapPin } from "lucide-svelte";
+  import { GraduationCap, Calendar, MapPin, Sparkles } from "lucide-svelte";
 
   const educationData = [
     {
@@ -36,30 +36,30 @@
   ];
 </script>
 
-<section id="education" class="relative py-24 px-4 overflow-hidden">
+<section id="education" class="relative py-20 px-4 overflow-hidden">
   <div class="max-w-5xl mx-auto z-10 relative">
     <!-- Section Heading -->
-    <div class="text-center mb-20">
+    <div class="text-center mb-16">
       <h2
-        class="font-display font-extrabold text-3xl sm:text-4xl text-white mb-2"
+        class="font-pixel text-2xl sm:text-3xl text-[#FFFF55] mc-text-shadow-gold mb-3"
       >
         EDUCATION TIMELINE
       </h2>
       <div
-        class="h-[3px] w-[80px] bg-gradient-to-r from-cyan-400 to-purple-600 mx-auto rounded-full"
+        class="h-1 w-24 bg-[#55FF55] mx-auto border border-black shadow-[0_0_8px_#55FF55]"
       ></div>
     </div>
 
     <!-- Timeline container -->
     <div
-      class="relative border-l-2 border-white/5 md:border-l-0 pl-6 md:pl-0 text-left"
+      class="relative border-l-4 border-black md:border-l-0 pl-6 md:pl-0 text-left"
     >
       <!-- Vertical connecting line for desktop -->
       <div
-        class="absolute left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-400 via-blue-500 to-purple-600 hidden md:block"
+        class="absolute left-1/2 top-0 bottom-0 w-1.5 bg-[#55FF55] border-x border-black hidden md:block"
       ></div>
 
-      <div class="space-y-16">
+      <div class="space-y-12">
         {#each educationData as item, idx}
           {@const isEven = idx % 2 === 0}
           <div
@@ -67,12 +67,11 @@
               ? 'md:flex-row-reverse'
               : ''}"
           >
-            <!-- Timeline Glow Dot -->
+            <!-- Timeline Slot Node -->
             <div
-              class="absolute -left-[33px] md:left-1/2 md:-translate-x-1/2 top-1.5 w-6 h-6 rounded-full bg-slate-950 border-4 border-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.5)] z-25 flex items-center justify-center"
+              class="absolute -left-[37px] md:left-1/2 md:-translate-x-1/2 top-2 w-7 h-7 mc-slot bg-[#040507] border-2 border-[#55FF55] shadow-[0_0_8px_#55FF55] z-20 flex items-center justify-center"
             >
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"
-              ></span>
+              <div class="w-2.5 h-2.5 bg-[#FFFF55] rotate-45 shadow-[0_0_4px_#FFFF55]"></div>
             </div>
 
             <!-- Empty space filler for desktop alignment -->
@@ -80,39 +79,34 @@
 
             <!-- Actual Timeline Card -->
             <div
-              class="w-full md:w-[45%] rounded-2xl glassmorphism border border-white/5 hover:border-cyan-500/20 p-6 sm:p-8 hover:scale-[1.01] transition-all duration-300 relative overflow-hidden group shadow-xl"
+              class="w-full md:w-[46%] mc-container p-6 bg-[#0c0d12] hover:scale-[1.01] transition-transform duration-150 relative"
             >
               <div
-                class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              ></div>
-
-              <div
-                class="flex flex-wrap gap-2 items-center text-xs font-mono text-cyan-400 mb-3"
+                class="flex flex-wrap gap-2 items-center text-[10px] font-silkscreen text-[#55FFFF] mb-3"
               >
-                <span class="flex items-center gap-1">
-                  <Calendar class="w-3.5 h-3.5" />
+                <span class="flex items-center gap-1 mc-slot px-2 py-0.5 bg-[#040507] border border-black/80">
+                  <Calendar class="w-3 h-3 text-[#FFFF55]" />
                   {item.period}
                 </span>
-                <span class="text-slate-600">|</span>
-                <span class="flex items-center gap-1 text-slate-400">
-                  <MapPin class="w-3.5 h-3.5" />
+                <span class="flex items-center gap-1 text-slate-400 mc-slot px-2 py-0.5 bg-[#040507] border border-black/80">
+                  <MapPin class="w-3 h-3 text-[#FF5555]" />
                   {item.location}
                 </span>
               </div>
 
               <h3
-                class="font-display font-extrabold text-lg sm:text-xl text-white mb-2 group-hover:text-cyan-300 transition-colors"
+                class="font-pixel text-sm sm:text-base text-white mb-2 mc-text-shadow"
               >
                 {item.degree}
               </h3>
               <h4
-                class="text-slate-300 text-sm font-semibold mb-4 flex items-center gap-1.5"
+                class="text-[#55FF55] text-xs font-silkscreen mb-4 flex items-center gap-1.5"
               >
-                <GraduationCap class="w-4 h-4 text-purple-400" />
+                <GraduationCap class="w-4 h-4 text-[#AA00AA]" />
                 {item.institution}
               </h4>
 
-              <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+              <p class="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
                 {item.description}
               </p>
             </div>

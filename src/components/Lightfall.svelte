@@ -27,7 +27,7 @@
     mixBlendMode = undefined
   } = $props();
 
-  let container;
+  let container = null;
   let canvas;
   let renderer;
   let program;

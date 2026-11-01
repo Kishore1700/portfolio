@@ -1,73 +1,90 @@
 <script>
+  import { ShieldAlert, Cpu, Database, Wrench } from "lucide-svelte";
+
   const skillCategories = [
     {
-      categoryName: 'Languages',
+      categoryName: 'ENCHANTMENTS: LANGUAGES',
+      icon: Wrench,
+      accentColor: 'text-[#55FF55]',
       skills: [
-        { name: 'Python', percentage: 90 },
-        { name: 'Java', percentage: 80 },
-        { name: 'C', percentage: 75 },
-        { name: 'JavaScript', percentage: 80 },
+        { name: 'Python', percentage: 90, tier: 'Lvl 90' },
+        { name: 'Java', percentage: 80, tier: 'Lvl 80' },
+        { name: 'C', percentage: 75, tier: 'Lvl 75' },
+        { name: 'JavaScript', percentage: 80, tier: 'Lvl 80' },
       ],
     },
     {
-      categoryName: 'Frontend / Web',
+      categoryName: 'CRAFTING: FRONTEND / WEB',
+      icon: Cpu,
+      accentColor: 'text-[#55FFFF]',
       skills: [
-        { name: 'HTML', percentage: 90 },
-        { name: 'CSS', percentage: 85 },
-        { name: 'Svelte', percentage: 85 },
+        { name: 'HTML', percentage: 90, tier: 'Lvl 90' },
+        { name: 'CSS', percentage: 85, tier: 'Lvl 85' },
+        { name: 'Svelte', percentage: 85, tier: 'Lvl 85' },
       ],
     },
     {
-      categoryName: 'Databases',
+      categoryName: 'REDSTONE: DATABASES',
+      icon: Database,
+      accentColor: 'text-[#FF5555]',
       skills: [
-        { name: 'SQL', percentage: 85 },
-        { name: 'MongoDB', percentage: 75 },
+        { name: 'SQL', percentage: 85, tier: 'Lvl 85' },
+        { name: 'MongoDB', percentage: 75, tier: 'Lvl 75' },
       ],
     },
     {
-      categoryName: 'Core Computer Science',
+      categoryName: 'BEDROCK: CORE CS',
+      icon: ShieldAlert,
+      accentColor: 'text-[#FFFF55]',
       skills: [
-        { name: 'DSA', percentage: 80 },
-        { name: 'OOPS Concepts', percentage: 85 },
-        { name: 'OS Concepts', percentage: 80 },
+        { name: 'DSA', percentage: 80, tier: 'Lvl 80' },
+        { name: 'OOPS Concepts', percentage: 85, tier: 'Lvl 85' },
+        { name: 'OS Concepts', percentage: 80, tier: 'Lvl 80' },
       ],
     },
   ];
 </script>
 
-<section id="skills" class="relative py-24 px-4 overflow-hidden">
+<section id="skills" class="relative py-20 px-4 overflow-hidden">
   <div class="max-w-7xl mx-auto z-10 relative">
     
     <!-- Section Heading -->
-    <div class="text-center mb-16">
-      <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white mb-2">
+    <div class="text-center mb-14">
+      <h2 class="font-pixel text-2xl sm:text-3xl text-[#FFFF55] mc-text-shadow-gold mb-3">
         SKILLS & ABILITIES
       </h2>
-      <div class="h-[3px] w-[80px] bg-gradient-to-r from-cyan-400 to-purple-600 mx-auto rounded-full"></div>
+      <div class="h-1 w-24 bg-[#55FF55] mx-auto border border-black shadow-[0_0_8px_#55FF55]"></div>
     </div>
 
-    <!-- Skills Grid -->
+    <!-- Skills Minecraft Chest Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       {#each skillCategories as cat}
+        {@const CategoryIcon = cat.icon}
         <div
-          class="p-6 sm:p-8 rounded-2xl glassmorphism border border-white/5 hover:border-blue-500/20 transition-all flex flex-col justify-between"
+          class="mc-container p-6 bg-[#0c0d12] flex flex-col justify-between"
         >
-          <h3 class="font-display font-bold text-xl text-cyan-400 mb-6 text-left border-b border-white/5 pb-3">
-            {cat.categoryName}
+          <h3 class="font-pixel text-xs sm:text-sm text-[#FFFF55] mc-text-shadow-gold mb-6 text-left border-b-2 border-black pb-3 flex items-center gap-2">
+            <CategoryIcon class="w-4 h-4 {cat.accentColor}" />
+            <span>{cat.categoryName}</span>
           </h3>
 
-          <div class="space-y-6">
+          <div class="space-y-5">
             {#each cat.skills as skill}
-              <div class="space-y-2">
-                <div class="flex justify-between items-center text-sm">
-                  <span class="font-sans font-medium text-slate-200">{skill.name}</span>
-                  <span class="font-mono text-cyan-400">{skill.percentage}%</span>
+              <div class="mc-slot p-3 bg-[#040507] hover:border-[#55FF55] transition-all mc-enchanted">
+                <div class="flex justify-between items-center text-xs font-silkscreen mb-2">
+                  <span class="text-slate-100 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-[#55FF55] shadow-[0_0_6px_#55FF55]"></span>
+                    {skill.name}
+                  </span>
+                  <span class="text-[#FFFF55] font-mono bg-[#000000] px-1.5 py-0.5 border border-black shadow-inner">
+                    {skill.tier} ({skill.percentage}%)
+                  </span>
                 </div>
 
-                <!-- Progress Bar Container -->
-                <div class="h-2 w-full bg-slate-950/80 rounded-full overflow-hidden border border-white/5 relative">
+                <!-- Minecraft XP Level Bar -->
+                <div class="mc-xp-container h-3">
                   <div
-                    class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+                    class="mc-xp-fill"
                     style="width: {skill.percentage}%"
                   ></div>
                 </div>
