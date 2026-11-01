@@ -1,6 +1,5 @@
 <script>
   import Navbar from './components/Navbar.svelte';
-  import MinecraftHUD from './components/MinecraftHUD.svelte';
   import SpotlightBg from './components/SpotlightBg.svelte';
   import Hero from './components/Hero.svelte';
   import About from './components/About.svelte';
@@ -16,10 +15,9 @@
 <div class="relative min-h-screen text-slate-100 font-sans selection:bg-[#55FF55]/30 selection:text-[#55FF55]">
   <SpotlightBg />
   <Navbar />
-  <MinecraftHUD />
 
   <div class="relative z-10">
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 pb-32 pt-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 pb-16 pt-6">
     <Hero />
 
     <!-- Minecraft Pixel Divider Line -->
