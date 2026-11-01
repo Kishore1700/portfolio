@@ -12,6 +12,7 @@
     { name: "INTERNSHIP", href: "#internship", slot: 5 },
     { name: "EDUCATION", href: "#education", slot: 6 },
     { name: "CERTIFICATIONS", href: "#certifications", slot: 7 },
+    { name: "CONTACT", href: "#contact", slot: 8 },
   ];
 
   let isOpen = $state(false);

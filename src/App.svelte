@@ -8,6 +8,7 @@
   import Internship from './components/Internship.svelte';
   import Education from './components/Education.svelte';
   import Certifications from './components/Certifications.svelte';
+  import Contact from './components/Contact.svelte';
   import ThankYou from './components/ThankYou.svelte';
   import Footer from './components/Footer.svelte';
 </script>
@@ -72,6 +73,14 @@
     <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
       <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
         <div class="w-3 h-3 bg-[#55FFFF] rotate-45 shadow-[0_0_8px_#55FFFF]"></div>
+      </div>
+    </div>
+
+    <Contact />
+
+    <div class="h-[4px] bg-black border-y border-[#181a24] relative flex items-center justify-center my-6">
+      <div class="w-8 h-8 bg-[#0c0d12] border-2 border-black rotate-45 absolute flex items-center justify-center">
+        <div class="w-3 h-3 bg-[#55FF55] rotate-45 shadow-[0_0_8px_#55FF55]"></div>
       </div>
     </div>
 
