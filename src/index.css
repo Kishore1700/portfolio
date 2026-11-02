@@ -25,22 +25,46 @@
     min-height: 100vh;
   }
 
-  /* Custom Pixelated Scrollbar - OLED Tuned */
+  /* Custom Pixelated Scrollbar - OLED & Minecraft HUD Tuned */
+  * {
+    scrollbar-color: #262936 #000000;
+    scrollbar-width: thin;
+  }
+
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 12px;
   }
   ::-webkit-scrollbar-track {
     background: #000000;
-    border-left: 2px solid #14151c;
+    border-left: 2px solid #14161f;
+    box-shadow: inset 2px 0 0 #050608;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1c1e26;
-    box-shadow: inset -2px -2px 0px #08090c, inset 2px 2px 0px #353847;
+    background-color: #222530;
     border: 2px solid #000000;
+    box-shadow: inset -2px -2px 0px #0c0d12, inset 2px 2px 0px #424657;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.45) 3px,
+      rgba(0, 0, 0, 0.45) 5px
+    );
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #55FF55;
-    box-shadow: inset -2px -2px 0px #1e661e, inset 2px 2px 0px #88ff88, 0 0 10px rgba(85, 255, 85, 0.7);
+    background-color: #55FF55;
+    box-shadow: inset -2px -2px 0px #1e661e, inset 2px 2px 0px #a3ffa3, 0 0 10px rgba(85, 255, 85, 0.5);
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 40, 0, 0.45) 3px,
+      rgba(0, 40, 0, 0.45) 5px
+    );
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: #FFFF55;
+    box-shadow: inset -2px -2px 0px #807000, inset 2px 2px 0px #ffffa3, 0 0 12px rgba(255, 255, 85, 0.7);
   }
 }
 
