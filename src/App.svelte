@@ -1,36 +1,35 @@
 <script>
-  import Navbar from './components/Navbar.svelte';
+  import CyberNavbar from './components/CyberNavbar.svelte';
+  import CyberHero from './components/CyberHero.svelte';
+  import CyberAbout from './components/CyberAbout.svelte';
+  import CyberFlagships from './components/CyberFlagships.svelte';
+  import CyberMatrix from './components/CyberMatrix.svelte';
+  import CyberContact from './components/CyberContact.svelte';
   import AgentSwarm from './components/AgentSwarm.svelte';
-  import BottomDock from './components/BottomDock.svelte';
-  import SideScrollbar from './components/SideScrollbar.svelte';
-  import Hero from './components/Hero.svelte';
-  import About from './components/About.svelte';
-  import Projects from './components/Projects.svelte';
-  import Skills from './components/Skills.svelte';
-  import ExperienceEducation from './components/ExperienceEducation.svelte';
-  import Contact from './components/Contact.svelte';
+  import TelemetryDock from './components/TelemetryDock.svelte';
 </script>
 
-<div class="relative min-h-screen bg-[#000000] text-slate-100 font-sans selection:bg-[#FF2A2A]/40 selection:text-white bg-cyber-grid">
-  <!-- Autonomous Multi-Agent Swarm (16+ agents wander, inspect, and vortex at contact) -->
+<div class="relative min-h-screen bg-[#000000] text-[#E0E0E0] font-sans-cyber cyber-grid-bg selection:bg-[#FF2A2A] selection:text-white">
+  
+  <!-- Left Laser Red Guide-line -->
+  <div class="cyber-vertical-laser hidden md:block"></div>
+
+  <!-- Live Autonomous Multi-Agent Swarm (Top Layer) -->
   <AgentSwarm />
 
-  <!-- Fixed Top Cyber-Operator Navbar -->
-  <Navbar />
+  <!-- Fixed Cyber Operator Navbar -->
+  <CyberNavbar />
 
-  <!-- Side Navigation Elevator -->
-  <SideScrollbar />
-
-  <!-- Bottom Telemetry Dock -->
-  <BottomDock />
-
-  <!-- Main Architecture Canvas -->
-  <main class="relative z-10 space-y-12 pb-24">
-    <Hero />
-    <About />
-    <Projects />
-    <Skills />
-    <ExperienceEducation />
-    <Contact />
+  <!-- Main Cyber-Operator Architecture View -->
+  <main class="relative z-10 space-y-4">
+    <CyberHero />
+    <CyberAbout />
+    <CyberFlagships />
+    <CyberMatrix />
+    <CyberContact />
   </main>
+
+  <!-- Bottom Interactive Telemetry Dock -->
+  <TelemetryDock />
+
 </div>

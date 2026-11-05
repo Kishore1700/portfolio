@@ -1,13 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap');
-
 @import "tailwindcss";
 
 @theme {
-  --font-display: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-sans: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Space Grotesk', 'Outfit', system-ui, sans-serif;
-  --font-pixel: 'Press Start 2P', monospace;
-  --font-silkscreen: 'Silkscreen', monospace;
+
+  --color-cyber-red: #FF2A2A;
+  --color-cyber-red-dark: #8F1212;
+  --color-cyber-red-glow: rgba(255, 42, 42, 0.45);
+  --color-cyber-cyan: #00E5FF;
+  --color-cyber-cyan-glow: rgba(0, 229, 255, 0.4);
+  --color-cyber-green: #00FF66;
+  --color-cyber-yellow: #FFD600;
+
+  --color-cyber-bg: #000000;
+  --color-cyber-surface: #070709;
+  --color-cyber-surface-2: #0D0E12;
+  --color-cyber-border: #1A1C23;
+  --color-cyber-border-light: #282B37;
 }
 
 @layer base {
@@ -15,7 +26,7 @@
     scroll-behavior: smooth;
     font-family: var(--font-sans);
     background-color: #000000;
-    color: #e2e8f0;
+    color: #E0E0E0;
     overflow-x: hidden;
   }
 
@@ -26,31 +37,26 @@
     min-height: 100vh;
   }
 
-  /* Cyber-Operator Sleek Scrollbar */
+  /* Minimalist Red-accented Cyberpunk Scrollbar */
   * {
-    scrollbar-color: #FF2A2A #000000;
+    scrollbar-color: #1F222E #000000;
     scrollbar-width: thin;
   }
 
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   ::-webkit-scrollbar-track {
     background: #000000;
-    border-left: 1px solid #141418;
+    border-left: 1px solid #14161F;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: #1f2029;
+    background-color: #1F222E;
     border-radius: 0px;
-    border: 1px solid #000000;
   }
   ::-webkit-scrollbar-thumb:hover {
     background-color: #FF2A2A;
-    box-shadow: 0 0 10px rgba(255, 42, 42, 0.6);
-  }
-  ::-webkit-scrollbar-thumb:active {
-    background-color: #00E5FF;
-    box-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+    box-shadow: 0 0 10px #FF2A2A;
   }
 }
 
@@ -58,119 +64,128 @@
 .font-display {
   font-family: 'Syne', sans-serif;
 }
-
-.font-mono {
+.font-sans-cyber {
+  font-family: 'Space Grotesk', sans-serif;
+}
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+.font-mono-cyber {
   font-family: 'JetBrains Mono', monospace;
 }
 
-.font-sans {
-  font-family: 'Space Grotesk', 'Outfit', sans-serif;
-}
-
-.font-pixel {
-  font-family: 'Press Start 2P', monospace;
-}
-
-.font-silkscreen {
-  font-family: 'Silkscreen', monospace;
-}
-
-/* Wireframe Outline Text */
-.text-wireframe-red {
+/* Giant Wireframe Outline Typography */
+.text-outline-cyber {
   color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 42, 42, 0.55);
+  text-shadow: 0 0 30px rgba(255, 42, 42, 0.15);
+  letter-spacing: -0.04em;
+  transition: all 0.3s ease;
+}
+.text-outline-cyber:hover {
   -webkit-text-stroke: 1.5px #FF2A2A;
-  text-shadow: 0 0 20px rgba(255, 42, 42, 0.25);
+  text-shadow: 0 0 45px rgba(255, 42, 42, 0.35);
 }
 
-.text-wireframe-white {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.4);
+/* Red High-Contrast Brand Block */
+.cyber-badge-red {
+  background-color: #FF2A2A;
+  color: #FFFFFF;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow: 0 0 25px rgba(255, 42, 42, 0.35);
 }
 
-.text-wireframe-cyan {
-  color: transparent;
-  -webkit-text-stroke: 1.5px #00E5FF;
-  text-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
-}
-
-/* Cybernetic Grid Background */
-.bg-cyber-grid {
-  background-size: 36px 36px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-}
-
-.bg-cyber-dots {
-  background-size: 24px 24px;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-}
-
-/* Laser Guide Line */
-.laser-line-red {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(180deg, transparent 0%, #FF2A2A 15%, #FF2A2A 85%, transparent 100%);
-  opacity: 0.6;
-  box-shadow: 0 0 10px rgba(255, 42, 42, 0.5);
-}
-
-/* Cyber Card Surface */
+/* Precision Hairline Panels & Boxes */
 .cyber-card {
-  background-color: #050608;
-  border: 1px solid #1a1b22;
+  background: #070709;
+  border: 1px solid #1A1C23;
   position: relative;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .cyber-card:hover {
-  border-color: #FF2A2A;
-  box-shadow: 0 0 24px rgba(255, 42, 42, 0.12);
+  border-color: #2E3344;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 42, 42, 0.1);
 }
 
-/* CAD Wireframe Selection Box */
-.cad-selection {
-  border: 1px dashed #00E5FF;
+/* Active CAD Wireframe Bounding Box */
+.cad-box {
   position: relative;
-  background: rgba(0, 229, 255, 0.03);
+  outline: 1.5px solid #00E5FF;
+  outline-offset: 3px;
 }
-
 .cad-handle {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   background-color: #00E5FF;
   border: 1px solid #000000;
 }
+.cad-handle-tl { top: -6px; left: -6px; }
+.cad-handle-tr { top: -6px; right: -6px; }
+.cad-handle-bl { bottom: -6px; left: -6px; }
+.cad-handle-br { bottom: -6px; right: -6px; }
 
-/* Red Brand Box */
-.badge-brand-red {
+/* Subtle Engineering Grid Background */
+.cyber-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Left Vertical Laser Guide Line */
+.cyber-vertical-laser {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, #FF2A2A 0%, rgba(255, 42, 42, 0.15) 30%, rgba(255, 42, 42, 0.05) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Buttons */
+.cyber-btn-primary {
   background-color: #FF2A2A;
-  color: #000000;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  padding: 0.15rem 0.5rem;
+  color: #FFFFFF;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 10px 20px;
+  border: 1px solid #FF2A2A;
   display: inline-flex;
   align-items: center;
-  border-radius: 1px;
+  gap: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 42, 42, 0.3);
+}
+.cyber-btn-primary:hover {
+  background-color: #E01E1E;
+  box-shadow: 0 0 30px rgba(255, 42, 42, 0.55);
+  transform: translateY(-1px);
 }
 
-/* Glowing Pulsing Status Dots */
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px currentColor;
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(0.85);
-    box-shadow: 0 0 2px currentColor;
-  }
+.cyber-btn-secondary {
+  background-color: #0A0B0E;
+  color: #D1D5DB;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 10px 20px;
+  border: 1px solid #232634;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s infinite ease-in-out;
+.cyber-btn-secondary:hover {
+  border-color: #4B5563;
+  color: #FFFFFF;
+  background-color: #12141C;
+  transform: translateY(-1px);
 }

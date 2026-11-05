@@ -1,124 +1,258 @@
 <script>
-  import { Mail, Check, Copy, Github, Linkedin, ArrowUpRight, Terminal, Shield } from "lucide-svelte";
-  import { sound } from "../utils/sound.js";
+  import { Mail, MapPin, Send, CheckCircle2, AlertCircle, Sparkles } from "lucide-svelte";
+  import confetti from "canvas-confetti";
 
-  let copied = $state(false);
-  const email = "kishorekishorei170@gmail.com";
+  let formData = $state({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
 
-  function copyEmail() {
-    sound.playClick();
-    navigator.clipboard.writeText(email);
-    copied = true;
-    setTimeout(() => {
-      copied = false;
-    }, 2500);
-  }
+  let status = $state("idle"); // 'idle' | 'submitting' | 'success' | 'error'
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      status = "error";
+      return;
+    }
+
+    status = "submitting";
+
+    // Simulate submission delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    status = "success";
+
+    // Trigger confetti!
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#55FF55', '#55FFFF', '#FFFF55', '#AA00AA']
+    });
+  };
+
+  const handleReset = () => {
+    formData = { name: "", email: "", subject: "", message: "" };
+    status = "idle";
+  };
 </script>
 
-<section id="contact" class="relative py-28 border-t border-[#14151e] bg-[#000000] overflow-hidden min-h-[75vh] flex flex-col justify-center">
-  
-  <!-- Subtle Background Grid -->
-  <div class="absolute inset-0 bg-cyber-dots opacity-30 pointer-events-none"></div>
+<section id="contact" class="relative py-20 px-4 overflow-hidden">
+  <div class="max-w-7xl mx-auto z-10 relative">
+    <!-- Section Heading -->
+    <div class="text-center mb-14">
+      <h2
+        class="font-pixel text-2xl sm:text-3xl text-[#FFFF55] mc-text-shadow-gold mb-3"
+      >
+        CRAFT A MESSAGE
+      </h2>
+      <div
+        class="h-1 w-24 bg-[#55FF55] mx-auto border border-black shadow-[0_0_8px_#55FF55]"
+      ></div>
+    </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-      
-      <!-- LEFT 8 COLUMNS: Direct Connect Call to Action -->
-      <div class="lg:col-span-8 space-y-6">
-        
-        <!-- Red Eyebrow Badge (Directly from Video!) -->
-        <div class="font-mono text-xs text-[#FF2A2A] font-bold tracking-widest uppercase">
-          DIRECT CONNECT
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
+      <!-- Contact Details Column -->
+      <div class="lg:col-span-5 flex flex-col justify-between gap-6 text-left">
+        <div class="space-y-6">
+          <h3 class="font-pixel text-lg text-white mc-text-shadow">
+            LET'S CONNECT
+          </h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed font-sans">
+            Whether you have a project idea, a job opportunity, or just want to
+            chat about Python, IoT, or Web Development, feel free to drop me a
+            message!
+          </p>
 
-        <h2 class="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight leading-tight">
-          Let's Architect Something Extraordinary.
-        </h2>
+          <div class="space-y-4 pt-2">
+            <!-- Email Card -->
+            <div
+              class="flex items-center gap-4 p-4 mc-container bg-[#0c0d12]"
+            >
+              <div
+                class="p-3 mc-slot bg-[#040507] text-[#55FFFF]"
+              >
+                <Mail class="w-5 h-5" />
+              </div>
+              <div>
+                <p class="text-[10px] text-[#FFFF55] font-silkscreen">EMAIL ADDRESS</p>
+                <a
+                  href="mailto:kishorekishorei170@gmail.com"
+                  class="text-xs font-mono text-slate-200 hover:text-[#55FF55] transition-colors"
+                >
+                  kishorekishorei170@gmail.com
+                </a>
+              </div>
+            </div>
 
-        <p class="font-sans text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-          Available for software engineering roles, full-stack application development, enterprise database architecture, and technical consultation worldwide.
-        </p>
-
-        <!-- Email Dispatch Box (From Video!) -->
-        <div class="pt-2 flex flex-wrap items-center gap-3">
-          <div class="px-4 py-3 bg-[#08090f] border border-[#222432] font-mono text-xs sm:text-sm text-white select-all">
-            {email}
-          </div>
-
-          <button
-            type="button"
-            onclick={copyEmail}
-            class="px-5 py-3 bg-[#FF2A2A] hover:bg-white text-black font-mono font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(255,42,42,0.35)]"
-          >
-            {#if copied}
-              <Check class="w-4 h-4 text-emerald-950" />
-              <span>COPIED TO CLIPBOARD!</span>
-            {:else}
-              <Copy class="w-4 h-4" />
-              <span>COPY EMAIL ADDRESS</span>
-            {/if}
-          </button>
-        </div>
-
-        <!-- Terminal Social Link Pills (From Video!) -->
-        <div class="flex flex-wrap items-center gap-3 pt-4">
-          <a
-            href="https://github.com/Kishore1700"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-3.5 py-2 bg-[#06070a] border border-[#1b1c28] hover:border-cyan-400 font-mono text-xs text-slate-300 hover:text-white flex items-center gap-2 transition-colors"
-          >
-            <Github class="w-4 h-4 text-cyan-400" />
-            <span>github.com/Kishore1700</span>
-            <ArrowUpRight class="w-3.5 h-3.5 text-slate-500" />
-          </a>
-
-          <a
-            href="mailto:kishorekishorei170@gmail.com"
-            class="px-3.5 py-2 bg-[#06070a] border border-[#1b1c28] hover:border-[#FF2A2A] font-mono text-xs text-slate-300 hover:text-white flex items-center gap-2 transition-colors"
-          >
-            <Mail class="w-4 h-4 text-[#FF2A2A]" />
-            <span>Direct Transmission</span>
-            <ArrowUpRight class="w-3.5 h-3.5 text-slate-500" />
-          </a>
-
-          <div class="px-3.5 py-2 bg-[#06070a] border border-[#1b1c28] font-mono text-xs text-slate-400 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-[#00FF66] animate-pulse"></span>
-            <span>Salem, Tamil Nadu, India</span>
+            <!-- Location Card -->
+            <div
+              class="flex items-center gap-4 p-4 mc-container bg-[#0c0d12]"
+            >
+              <div
+                class="p-3 mc-slot bg-[#040507] text-[#AA00AA]"
+              >
+                <MapPin class="w-5 h-5" />
+              </div>
+              <div>
+                <p class="text-[10px] text-[#FFFF55] font-silkscreen">WORLD LOCATION</p>
+                <p class="text-xs font-mono text-slate-200">
+                  Salem, Tamil Nadu, India
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Footer Copyright & Swarm Rebuild Note (Directly from Video!) -->
-        <div class="pt-8 border-t border-[#161722] text-slate-500 font-mono text-[11px] space-y-1">
-          <div>
-            &copy; 2026 Kishore P M &bull; Designed & Architected with Svelte 5.
+        <!-- Micro Minecraft terminal box -->
+        <div
+          class="hidden lg:block p-4 mc-slot bg-[#040507] text-[10px] font-mono text-slate-400 space-y-1.5 border-2 border-black"
+        >
+          <div class="flex justify-between items-center text-[#55FF55] font-silkscreen">
+            <span>SERVER_PING</span>
+            <span>● 20ms [OK]</span>
           </div>
-          <div class="text-slate-600">
-            Rebuilt by 28 autonomous agents in 48.6s &bull; Built from first principles &bull; Zero frameworks bloat.
-          </div>
+          <p class="text-slate-500">&gt; ping -c 2 github.com/Kishore1700</p>
+          <p class="text-[#55FF55]">
+            64 bytes from Kishore: bytes=64 time=0.04ms
+          </p>
         </div>
-
       </div>
 
-      <!-- RIGHT 4 COLUMNS: Swarm Vortex Landing Space (From Video!) -->
-      <div class="lg:col-span-4 hidden lg:flex flex-col items-center justify-center relative min-h-[350px]">
-        
-        <!-- Swarm Vortex Orbit Ring Marker -->
-        <div class="w-64 h-64 rounded-full border border-dashed border-[#1f212f] flex items-center justify-center relative animate-spin [animation-duration:40s]">
-          <div class="w-48 h-48 rounded-full border border-[#2a2c3d]/40 flex items-center justify-center">
-            <div class="w-32 h-32 rounded-full border border-cyan-500/20"></div>
-          </div>
-        </div>
+      <!-- Form Column -->
+      <div class="lg:col-span-7">
+        <div
+          class="p-6 sm:p-8 mc-container bg-[#0c0d12] relative overflow-hidden"
+        >
+          {#if status === "success"}
+            <div
+              class="flex flex-col items-center justify-center text-center py-10 space-y-4"
+            >
+              <CheckCircle2 class="w-16 h-16 text-[#55FF55] animate-bounce" />
+              <h3 class="font-pixel text-xl text-[#FFFF55] mc-text-shadow-gold">
+                MESSAGE DELIVERED!
+              </h3>
+              <p class="text-slate-300 text-xs sm:text-sm max-w-sm font-sans">
+                Thank you for reaching out, {formData.name}! I will get back to
+                you as soon as possible.
+              </p>
+              <button
+                onclick={handleReset}
+                class="mc-button text-xs px-5 py-3 text-white mt-4"
+              >
+                SEND ANOTHER MESSAGE
+              </button>
+            </div>
+          {:else}
+            <form onsubmit={handleSubmit} class="space-y-4 text-left">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Name -->
+                <div class="space-y-1.5">
+                  <label
+                    for="name"
+                    class="text-[10px] text-[#FFFF55] font-silkscreen uppercase"
+                  >
+                    PLAYER NAME <span class="text-[#FF5555]">*</span>
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    placeholder="Your name"
+                    bind:value={formData.name}
+                    class="w-full px-3 py-2.5 mc-slot bg-[#040507] text-white placeholder-slate-500 text-xs focus:border-[#55FF55] focus:outline-none transition-all font-sans"
+                  />
+                </div>
 
-        <!-- Center Terminal Node -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-center font-mono pointer-events-none">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#FF2A2A] animate-ping mb-2 shadow-[0_0_12px_#FF2A2A]"></span>
-          <span class="text-xs font-bold text-white tracking-widest">SWARM VORTEX</span>
-          <span class="text-[9px] text-cyan-400 mt-0.5">28 AGENTS SYNCHRONIZED</span>
-        </div>
+                <!-- Email -->
+                <div class="space-y-1.5">
+                  <label
+                    for="email"
+                    class="text-[10px] text-[#FFFF55] font-silkscreen uppercase"
+                  >
+                    EMAIL ADDRESS <span class="text-[#FF5555]">*</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="your.email@gmail.com"
+                    bind:value={formData.email}
+                    class="w-full px-3 py-2.5 mc-slot bg-[#040507] text-white placeholder-slate-500 text-xs focus:border-[#55FF55] focus:outline-none transition-all font-sans"
+                  />
+                </div>
+              </div>
 
+              <!-- Subject -->
+              <div class="space-y-1.5">
+                <label
+                  for="subject"
+                  class="text-[10px] text-[#FFFF55] font-silkscreen uppercase"
+                >
+                  MESSAGE SUBJECT
+                </label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  placeholder="Collaboration, project query, etc."
+                  bind:value={formData.subject}
+                  class="w-full px-3 py-2.5 mc-slot bg-[#040507] text-white placeholder-slate-500 text-xs focus:border-[#55FF55] focus:outline-none transition-all font-sans"
+                />
+              </div>
+
+              <!-- Message -->
+              <div class="space-y-1.5">
+                <label
+                  for="message"
+                  class="text-[10px] text-[#FFFF55] font-silkscreen uppercase"
+                >
+                  MESSAGE CONTENT <span class="text-[#FF5555]">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  required
+                  placeholder="Hi Kishore, I'd love to connect regarding..."
+                  bind:value={formData.message}
+                  class="w-full px-3 py-2.5 mc-slot bg-[#040507] text-white placeholder-slate-500 text-xs focus:border-[#55FF55] focus:outline-none transition-all resize-none font-sans"
+                ></textarea>
+              </div>
+
+              {#if status === "error"}
+                <div
+                  class="flex items-center gap-2 text-xs text-[#FF5555] font-silkscreen"
+                >
+                  <AlertCircle class="w-4 h-4 shrink-0" />
+                  <span>PLEASE FILL OUT ALL REQUIRED SLOTS.</span>
+                </div>
+              {/if}
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                disabled={status === "submitting"}
+                class="mc-button mc-button-gold w-full py-3.5 text-xs text-[#FFFF55] flex items-center justify-center gap-2 mt-2"
+              >
+                {#if status === "submitting"}
+                  <div
+                    class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                  ></div>
+                {:else}
+                  <span>DISPATCH MESSAGE</span>
+                  <Send class="w-4 h-4 text-[#55FFFF]" />
+                {/if}
+              </button>
+            </form>
+          {/if}
+        </div>
       </div>
-
     </div>
   </div>
 </section>

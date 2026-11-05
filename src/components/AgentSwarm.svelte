@@ -1,174 +1,157 @@
 <script>
   import { onMount } from "svelte";
 
-  // List of autonomous agents building the interface
-  const agentNames = [
-    { name: "ClaudeCode", color: "#FF5555" },
-    { name: "Hermes-70B", color: "#00E5FF" },
-    { name: "Qwen-Coder", color: "#00FF66" },
-    { name: "Agent-Python", color: "#FFD600" },
-    { name: "Agent-Svelte", color: "#FF3366" },
-    { name: "Architect", color: "#A855F7" },
-    { name: "DB-Worker", color: "#3B82F6" },
-    { name: "Security-Scan", color: "#10B981" },
-    { name: "Quant-Loop", color: "#F97316" },
-    { name: "Voxel-Engine", color: "#06B6D4" },
-    { name: "Test-Runner", color: "#EC4899" },
-    { name: "API-Gateway", color: "#8B5CF6" },
-    { name: "Audit-Trail", color: "#EAB308" },
-    { name: "Memory-L5", color: "#14B8A6" },
-    { name: "Core-Daemon", color: "#EF4444" },
-    { name: "Sub-50ms", color: "#6366F1" },
+  // Configuration for 24 autonomous agent cursors
+  const agentTemplates = [
+    { name: "ClaudeCode", color: "#FF2A2A", role: "Architecture Core" },
+    { name: "Hermes-70B", color: "#00E5FF", role: "Quant Execution" },
+    { name: "GPT-4o", color: "#00FF66", role: "Full-Stack Synthesizer" },
+    { name: "DeepSeek-V3", color: "#FFD600", role: "Algorithmic Logic" },
+    { name: "Qwen-2.5", color: "#FF3399", role: "System Verification" },
+    { name: "Codestral", color: "#9933FF", role: "FastAPI Engine" },
+    { name: "Mistral-Large", color: "#FF6600", role: "Database Modeling" },
+    { name: "Llama-3.3", color: "#33CCFF", role: "Autonomous Loop" },
+    { name: "Sovereign-1", color: "#FF2A2A", role: "RTX 4070 Local" },
+    { name: "Architect-Prime", color: "#00E5FF", role: "State Graph" },
+    { name: "Solidity-Operator", color: "#FFD600", role: "Mainnet Dispatch" },
+    { name: "UI-Renderer", color: "#00FF66", role: "Svelte DOM Synth" },
   ];
 
-  // Number of active swarm agents
   let agents = $state([]);
-  let isContactVisible = $state(false);
-  let scrollProgress = $state(0);
-  let windowWidth = $state(1200);
-  let windowHeight = $state(800);
+  let isSwarmVortex = $state(false);
+  let isTouring = $state(true);
+
+  // Initialize 20 active agent cursors with dynamic targets and velocities
+  function initAgents() {
+    const list = [];
+    for (let i = 0; i < 20; i++) {
+      const template = agentTemplates[i % agentTemplates.length];
+      list.push({
+        id: i,
+        name: template.name,
+        color: template.color,
+        role: template.role,
+        x: Math.random() * (typeof window !== "undefined" ? window.innerWidth : 1200),
+        y: Math.random() * (typeof window !== "undefined" ? window.innerHeight : 800),
+        targetX: Math.random() * 1200,
+        targetY: Math.random() * 800,
+        speed: 0.03 + Math.random() * 0.04,
+        boxW: 30 + Math.floor(Math.random() * 80),
+        boxH: 14 + Math.floor(Math.random() * 30),
+        hasBox: Math.random() > 0.45,
+        clickPulse: false
+      });
+    }
+    agents = list;
+  }
 
   onMount(() => {
-    windowWidth = window.innerWidth;
-    windowHeight = window.innerHeight;
+    initAgents();
 
-    const handleResize = () => {
-      windowWidth = window.innerWidth;
-      windowHeight = window.innerHeight;
-    };
-
+    // Check scroll for vortex formation near the bottom (Contact)
     const handleScroll = () => {
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      scrollProgress = docHeight > 0 ? window.scrollY / docHeight : 0;
-      
-      const contactEl = document.getElementById("contact");
-      if (contactEl) {
-        const rect = contactEl.getBoundingClientRect();
-        isContactVisible = rect.top < window.innerHeight * 0.75;
-      }
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      isSwarmVortex = maxScroll > 0 && scrollY > maxScroll - 400;
     };
-
-    window.addEventListener("resize", handleResize, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
 
-    // Initialize 16 agents with physics
-    agents = agentNames.map((a, i) => {
-      const angle = (i / agentNames.length) * Math.PI * 2;
-      return {
-        id: i,
-        name: a.name,
-        color: a.color,
-        x: windowWidth * 0.2 + Math.cos(angle) * (windowWidth * 0.25) + (Math.random() * 100 - 50),
-        y: windowHeight * 0.3 + Math.sin(angle) * (windowHeight * 0.2) + (Math.random() * 100 - 50),
-        vx: (Math.random() - 0.5) * 1.5,
-        vy: (Math.random() - 0.5) * 1.5,
-        targetX: Math.random() * windowWidth,
-        targetY: Math.random() * windowHeight,
-        hasBox: i % 4 === 0,
-        boxW: 40 + Math.floor(Math.random() * 80),
-        boxH: 18 + Math.floor(Math.random() * 30),
-        timer: Math.random() * 100,
-      };
-    });
-
-    let animationFrame;
-    let clock = 0;
+    let animId;
+    let angle = 0;
 
     const loop = () => {
-      clock += 0.03;
+      angle += 0.02;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-      agents = agents.map((agent, i) => {
-        let { x, y, vx, vy, targetX, targetY, timer, boxW, boxH, hasBox } = agent;
-        timer += 1;
-
-        if (isContactVisible) {
-          // Flock into circular spiral formation on right side of viewport (like end of video!)
-          const centerX = windowWidth > 1024 ? windowWidth * 0.78 : windowWidth * 0.5;
-          const centerY = windowHeight * 0.5;
-          const spiralAngle = clock * 1.5 + (i / agents.length) * Math.PI * 2;
-          const spiralRadius = 90 + Math.sin(clock + i) * 35;
-          targetX = centerX + Math.cos(spiralAngle) * spiralRadius;
-          targetY = centerY + Math.sin(spiralAngle) * spiralRadius;
+      // Update positions
+      agents.forEach((agent, i) => {
+        if (isSwarmVortex) {
+          // Vortex spiral mode at the right of contact section
+          const centerX = width - 180;
+          const centerY = height * 0.55;
+          const radius = 60 + (i * 5);
+          const currentAngle = angle + (i * (Math.PI * 2 / agents.length));
+          agent.x += ((centerX + Math.cos(currentAngle) * radius) - agent.x) * 0.08;
+          agent.y += ((centerY + Math.sin(currentAngle) * radius) - agent.y) * 0.08;
         } else {
-          // Change wander targets periodically
-          if (timer > 140) {
-            timer = 0;
-            targetX = Math.max(50, Math.min(windowWidth - 100, x + (Math.random() - 0.5) * 400));
-            targetY = Math.max(80, Math.min(windowHeight - 80, y + (Math.random() - 0.5) * 350));
+          // Autonomous roving / inspection mode
+          const dx = agent.targetX - agent.x;
+          const dy = agent.targetY - agent.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 30 || Math.random() < 0.008) {
+            agent.targetX = Math.max(40, Math.min(width - 80, Math.random() * width));
+            agent.targetY = Math.max(60, Math.min(height - 80, Math.random() * height));
+            agent.hasBox = Math.random() > 0.4;
+            agent.boxW = 32 + Math.floor(Math.random() * 90);
+            agent.boxH = 16 + Math.floor(Math.random() * 28);
+          } else {
+            agent.x += dx * agent.speed;
+            agent.y += dy * agent.speed;
           }
         }
-
-        // Smooth steering physics
-        const dx = targetX - x;
-        const dy = targetY - y;
-        vx += dx * 0.003;
-        vy += dy * 0.003;
-        vx *= 0.94;
-        vy *= 0.94;
-
-        x += vx;
-        y += vy;
-
-        return { ...agent, x, y, vx, vy, timer, boxW, boxH, hasBox };
       });
 
-      animationFrame = requestAnimationFrame(loop);
+      animId = requestAnimationFrame(loop);
     };
 
-    animationFrame = requestAnimationFrame(loop);
+    animId = requestAnimationFrame(loop);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animId);
       window.removeEventListener("scroll", handleScroll);
-      cancelAnimationFrame(animationFrame);
     };
   });
 </script>
 
-<!-- AUTONOMOUS AGENT SWARM OVERLAY -->
-<div class="fixed inset-0 pointer-events-none z-[90] overflow-hidden hidden md:block">
+<!-- Swarm Layer: Fixed, Transparent, Non-blocking -->
+<div class="fixed inset-0 pointer-events-none z-[9990] overflow-hidden select-none">
   {#each agents as agent (agent.id)}
+    <!-- Autonomous Cursor -->
     <div
-      class="absolute transition-transform duration-75 ease-out select-none"
+      class="absolute transition-transform duration-75 will-change-transform"
       style="transform: translate3d({agent.x}px, {agent.y}px, 0);"
     >
-      <!-- CAD Selection Bounding Box (drawn by some agents) -->
-      {#if agent.hasBox && !isContactVisible}
+      <!-- CAD Selection Bounding Box if inspecting -->
+      {#if agent.hasBox && !isSwarmVortex}
         <div
-          class="absolute -top-1 -left-1 pointer-events-none border border-cyan-400/80 bg-cyan-400/5 shadow-[0_0_10px_rgba(0,229,255,0.2)] animate-pulse"
+          class="absolute -top-3 -left-3 border border-cyan-400/80 bg-cyan-950/20 pointer-events-none transition-all duration-200"
           style="width: {agent.boxW}px; height: {agent.boxH}px;"
         >
           <!-- Corner handles -->
-          <span class="absolute -top-1 -left-1 w-2 h-2 bg-cyan-400 border border-black"></span>
-          <span class="absolute -top-1 -right-1 w-2 h-2 bg-cyan-400 border border-black"></span>
-          <span class="absolute -bottom-1 -left-1 w-2 h-2 bg-cyan-400 border border-black"></span>
-          <span class="absolute -bottom-1 -right-1 w-2 h-2 bg-cyan-400 border border-black"></span>
+          <div class="absolute -top-1 -left-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
+          <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
+          <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
+          <div class="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
           
-          <!-- Dimension tag -->
-          <span class="absolute -bottom-5 left-0 font-mono text-[8px] bg-black/90 text-cyan-400 px-1 py-0.5 border border-cyan-500/40 whitespace-nowrap">
+          <!-- Dimension Badge -->
+          <div class="absolute -bottom-4 left-0 font-mono-cyber text-[8px] text-cyan-300 bg-black/90 px-1 border border-cyan-500/40 whitespace-nowrap">
             {agent.boxW} &times; {agent.boxH}
-          </span>
+          </div>
         </div>
       {/if}
 
-      <!-- Cursor Arrow -->
+      <!-- Cursor Pointer SVG -->
       <svg
-        class="w-4 h-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] -rotate-12"
+        class="w-4 h-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
         viewBox="0 0 24 24"
-        fill={agent.color}
-        stroke="#000000"
-        stroke-width="1.5"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M3 3l7 18 3-7 7-3L3 3z" />
+        <path
+          d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z"
+          fill={agent.color}
+          stroke="#000000"
+          stroke-width="1.5"
+        />
       </svg>
 
       <!-- Agent Name Badge -->
       <div
-        class="absolute left-3 top-2.5 px-1.5 py-0.5 rounded-sm text-[9px] font-mono tracking-tight text-white border whitespace-nowrap shadow-[0_2px_10px_rgba(0,0,0,0.9)] flex items-center gap-1"
-        style="background-color: #07080c; border-color: {agent.color};"
+        class="absolute left-3.5 top-2.5 px-1.5 py-0.5 rounded-[2px] font-mono-cyber text-[9px] font-bold text-white whitespace-nowrap flex items-center gap-1 shadow-[0_2px_10px_rgba(0,0,0,0.85)] border border-black/80"
+        style="background-color: {agent.color};"
       >
-        <span class="w-1.5 h-1.5 rounded-full" style="background-color: {agent.color};"></span>
         <span>{agent.name}</span>
       </div>
     </div>
