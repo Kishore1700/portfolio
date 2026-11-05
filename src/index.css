@@ -73,11 +73,14 @@
 .font-mono-cyber {
   font-family: 'JetBrains Mono', monospace;
 }
+.font-cursive {
+  font-family: 'Caveat', cursive;
+}
 
 /* Giant Wireframe Outline Typography */
 .text-outline-cyber {
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 42, 42, 0.55);
+  -webkit-text-stroke: 1.5px #FF2A2A;
   text-shadow: 0 0 30px rgba(255, 42, 42, 0.15);
   letter-spacing: -0.04em;
   transition: all 0.3s ease;

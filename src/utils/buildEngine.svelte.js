@@ -1,44 +1,45 @@
-// Coordinated Multi-Agent Build Engine (Svelte 5 Runes)
+// Coordinated Multi-Agent Autonomous Build Engine (Svelte 5 Runes)
 export class BuildEngine {
-  step = $state(0);
-  isScanning = $state(true);
-  isComplete = $state(false);
+  phase = $state("scanning"); // 'scanning' | 'wireframe' | 'building' | 'complete'
+  isScanning = $derived(this.phase === "scanning");
+  isWireframe = $derived(this.phase === "wireframe");
+  isComplete = $derived(this.phase === "complete");
 
-  // Targets currently being built / selected
-  activeTarget = $state(null); // { id, x, y, w, h, label, agent, isTyping }
+  // Track active agent positions & targets: map agentName -> { id, x, y, label, isTyping }
+  agentTargets = $state({});
 
-  // Built status for each element ID
-  builtStates = $state({
-    "port-wireframe": false,
-    "hero-greet": false,
-    "hero-name": false,
-    "hero-role": false,
-    "hero-bio": false,
-    "hero-buttons": false,
-    "hero-metrics": false,
-    "hero-portrait": false,
-    "hero-runtimes": false,
-    "hero-tags": false,
-    "about-header": false,
-    "about-bio": false,
-    "about-strengths": false,
-    "about-pillars": false,
-    "flagship-header": false,
-    "flagship-core": false,
-    "flagship-layers": false,
-    "flagship-grid": false,
-    "matrix-header": false,
-    "matrix-cards": false,
-    "exp-header": false,
-    "exp-card": false,
-    "edu-header": false,
-    "edu-timeline": false,
-    "cert-header": false,
-    "cert-grid": false,
-    "contact-header": false,
-    "contact-quick": false,
-    "contact-form": false
+  // Active build states: id -> true/false
+  builtStates = $state({});
+
+  // Real-time typed text for typewriter elements
+  typedTexts = $state({
+    "hero-greet": "",
+    "hero-name": "",
+    "hero-role": "",
+    "hero-bio": "",
+    "hero-btn2": "",
+    "hero-runtime1": "",
+    "hero-runtime2": "",
+    "hero-runtime3": "",
+    "about-header": "",
+    "flagship-header": "",
+    "contact-header": ""
   });
+
+  // Target full texts to type out
+  fullTexts = {
+    "hero-greet": "Hello, I'm",
+    "hero-name": "KISHORE.",
+    "hero-role": "• FULL-STACK ARCHITECT & MCA SCHOLAR",
+    "hero-bio": "Master of Computer Applications candidate at Sona College of Technology. Architecting high-concurrency backend services, asynchronous pipelines, and reactive client interfaces from first principles — zero frameworks, total autonomy.",
+    "hero-btn2": "EXPLORE ARCHITECTURE",
+    "hero-runtime1": "01. Autonomous Core",
+    "hero-runtime2": "02. Reactive Web Engine",
+    "hero-runtime3": "03. AI & Computer Vision",
+    "about-header": "Background & Philosophy",
+    "flagship-header": "Flagship Deployments",
+    "contact-header": "Let's Architect Something Extraordinary."
+  };
 
   // Crosshair markers placed by agents
   crosshairs = $state([]);
@@ -50,103 +51,203 @@ export class BuildEngine {
   }
 
   initSequence() {
-    this.step = 0;
-    this.isScanning = true;
-    this.isComplete = false;
+    this.phase = "scanning";
+    this.agentTargets = {};
     this.crosshairs = [];
 
-    // Reset all built states
-    Object.keys(this.builtStates).forEach((k) => {
-      this.builtStates[k] = false;
+    // Reset typed texts
+    Object.keys(this.typedTexts).forEach((k) => {
+      this.typedTexts[k] = "";
     });
 
-    // 0.8s of scanning orbit, then begin live build
+    // Reset built states
+    const allIds = [
+      "port-wireframe", "hero-greet", "hero-name", "hero-role", "hero-bio",
+      "hero-buttons", "hero-metrics", "hero-portrait", "hero-runtimes", "hero-tags",
+      "about-header", "about-bio", "about-strengths", "about-pillars",
+      "flagship-header", "flagship-core", "flagship-layers", "flagship-grid",
+      "matrix-header", "matrix-cards",
+      "exp-header", "exp-card", "edu-header", "edu-timeline",
+      "cert-header", "cert-grid",
+      "contact-header", "contact-quick", "contact-form"
+    ];
+    allIds.forEach((id) => {
+      this.builtStates[id] = false;
+    });
+
+    // Phase 1: 0.9s Central scanning orbit
     setTimeout(() => {
-      this.isScanning = false;
-      this.runNextStep();
-    }, 800);
+      // Phase 2: Wireframe Blueprint activated
+      this.phase = "wireframe";
+
+      // Allow 0.4s of full CAD blueprint canvas
+      setTimeout(() => {
+        this.phase = "building";
+        this.startMultiAgentBuild();
+      }, 400);
+    }, 900);
   }
 
-  runNextStep() {
-    const buildPlan = [
-      { id: "port-wireframe", label: "1021 × 336", agent: "Architect", dur: 280 },
-      { id: "hero-greet", label: "84 × 22", agent: "UI-Synthesizer", dur: 180 },
-      { id: "hero-name", label: "128 × 48", agent: "ClaudeCode", isTyping: true, dur: 380 },
-      { id: "hero-role", label: "291 × 13", agent: "Hermes-70B", isTyping: true, dur: 320 },
-      { id: "hero-bio", label: "425 × 71", agent: "GPT-4o", isTyping: true, dur: 380 },
-      { id: "hero-buttons", label: "260 × 40", agent: "DeepSeek-V3", dur: 220 },
-      { id: "hero-metrics", label: "340 × 44", agent: "Codestral", dur: 220 },
-      { id: "hero-portrait", label: "240 × 250", agent: "Sovereign-1", dur: 400 },
-      { id: "hero-runtimes", label: "280 × 160", agent: "Quant-Prime", dur: 280 },
-      { id: "hero-tags", label: "260 × 30", agent: "Mistral-Large", dur: 200 },
-      { id: "about-header", label: "281 × 13", agent: "Qwen-2.5", isTyping: true, dur: 280 },
-      { id: "about-bio", label: "440 × 180", agent: "Llama-3.3", dur: 320 },
-      { id: "about-strengths", label: "440 × 140", agent: "ClaudeCode", dur: 300 },
-      { id: "about-pillars", label: "360 × 260", agent: "Architect", dur: 320 },
-      { id: "flagship-header", label: "241 × 28", agent: "ClaudeCode", dur: 260 },
-      { id: "flagship-core", label: "680 × 260", agent: "Hermes-70B", dur: 360 },
-      { id: "flagship-layers", label: "580 × 90", agent: "FastAPI-Core", dur: 280 },
-      { id: "flagship-grid", label: "680 × 200", agent: "UI-Synthesizer", dur: 340 },
-      { id: "matrix-header", label: "260 × 28", agent: "DeepSeek-V3", dur: 260 },
-      { id: "matrix-cards", label: "720 × 240", agent: "Solidity-Op", dur: 340 },
-      { id: "exp-header", label: "240 × 28", agent: "Codestral", dur: 240 },
-      { id: "exp-card", label: "720 × 200", agent: "Mistral-Large", dur: 320 },
-      { id: "edu-header", label: "240 × 28", agent: "Qwen-2.5", dur: 240 },
-      { id: "edu-timeline", label: "720 × 220", agent: "Sovereign-1", dur: 320 },
-      { id: "cert-header", label: "240 × 28", agent: "Llama-3.3", dur: 240 },
-      { id: "cert-grid", label: "720 × 200", agent: "Architect", dur: 320 },
-      { id: "contact-header", label: "380 × 42", agent: "ClaudeCode", isTyping: true, dur: 300 },
-      { id: "contact-quick", label: "360 × 38", agent: "Hermes-70B", dur: 250 },
-      { id: "contact-form", label: "440 × 320", agent: "GPT-4o", dur: 350 }
-    ];
+  startMultiAgentBuild() {
+    // Stage 1: Architect draws PORTFOLIO and UI-Synthesizer types "Hello, I'm"
+    this.assignTarget("Architect", "port-wireframe", "1021 × 336", false, 300);
+    this.builtStates["port-wireframe"] = true;
 
-    if (this.step < buildPlan.length) {
-      const plan = buildPlan[this.step];
-      const el = document.getElementById(plan.id);
+    setTimeout(() => {
+      this.typeText("UI-Synthesizer", "hero-greet", 18, () => {
+        this.builtStates["hero-greet"] = true;
+      });
+    }, 150);
 
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        this.activeTarget = {
-          id: plan.id,
-          x: rect.left + window.scrollX,
-          y: rect.top + window.scrollY,
-          w: Math.round(rect.width) || parseInt(plan.label),
-          h: Math.round(rect.height) || 40,
-          label: `${Math.round(rect.width) || plan.label.split("×")[0]} × ${Math.round(rect.height) || plan.label.split("×")[1] || 40}`,
-          agent: plan.agent,
-          isTyping: plan.isTyping || false
-        };
+    // Stage 2: ClaudeCode types KISHORE. in red block & Hermes-70B types role
+    setTimeout(() => {
+      this.typeText("ClaudeCode", "hero-name", 35, () => {
+        this.builtStates["hero-name"] = true;
+      });
 
-        // Add a placement crosshair
-        if (this.crosshairs.length < 12) {
-          this.crosshairs.push({
-            id: Math.random(),
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2
+      this.typeText("Hermes-70B", "hero-role", 15, () => {
+        this.builtStates["hero-role"] = true;
+      });
+    }, 400);
+
+    // Stage 3: Sovereign-1 materializes portrait & GPT-4o streams the bio paragraph
+    setTimeout(() => {
+      this.assignTarget("Sovereign-1", "hero-portrait", "240 × 250", false, 1200);
+      this.builtStates["hero-portrait"] = true;
+
+      this.typeText("GPT-4o", "hero-bio", 8, () => {
+        this.builtStates["hero-bio"] = true;
+      });
+
+      // Quant-Prime types the runtimes concurrently
+      this.typeText("Quant-Prime", "hero-runtime1", 12, () => {
+        this.typeText("Quant-Prime", "hero-runtime2", 12, () => {
+          this.typeText("Quant-Prime", "hero-runtime3", 12, () => {
+            this.builtStates["hero-runtimes"] = true;
           });
-        }
+        });
+      });
+    }, 850);
+
+    // Stage 4: DeepSeek-V3 types button & Codestral unlocks metrics & tags
+    setTimeout(() => {
+      this.typeText("DeepSeek-V3", "hero-btn2", 15, () => {
+        this.builtStates["hero-buttons"] = true;
+      });
+
+      this.assignTarget("Codestral", "hero-metrics", "340 × 44", false, 400);
+      this.builtStates["hero-metrics"] = true;
+
+      this.assignTarget("Mistral-Large", "hero-tags", "260 × 30", false, 400);
+      this.builtStates["hero-tags"] = true;
+    }, 1400);
+
+    // Stage 5: Down-page elements unlock progressively
+    setTimeout(() => {
+      this.unlockDownPageSections();
+    }, 2200);
+  }
+
+  typeText(agentName, targetId, charInterval, onDone) {
+    const full = this.fullTexts[targetId] || "";
+    let idx = 0;
+    this.typedTexts[targetId] = "";
+
+    const el = typeof document !== "undefined" ? document.getElementById(targetId) : null;
+    let label = "CAD // LAYER";
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      label = `${Math.round(rect.width) || 120} × ${Math.round(rect.height) || 30}`;
+    }
+
+    this.assignTarget(agentName, targetId, label, true, full.length * charInterval + 100);
+
+    const interval = setInterval(() => {
+      if (idx < full.length) {
+        idx++;
+        this.typedTexts[targetId] = full.slice(0, idx);
+      } else {
+        clearInterval(interval);
+        this.removeTarget(agentName);
+        if (onDone) onDone();
       }
+    }, charInterval);
+  }
 
-      // Unlock element
-      this.builtStates[plan.id] = true;
+  assignTarget(agentName, targetId, label, isTyping, dur) {
+    if (typeof document === "undefined") return;
+    const el = document.getElementById(targetId);
+    if (!el) return;
 
+    const rect = el.getBoundingClientRect();
+    this.agentTargets[agentName] = {
+      id: targetId,
+      screenX: rect.left + rect.width * 0.5,
+      screenY: rect.top + rect.height * 0.5,
+      w: Math.round(rect.width) || 100,
+      h: Math.round(rect.height) || 30,
+      label: label || `${Math.round(rect.width)} × ${Math.round(rect.height)}`,
+      agent: agentName,
+      isTyping: !!isTyping
+    };
+
+    // Add crosshair
+    if (this.crosshairs.length < 16) {
+      this.crosshairs.push({
+        id: Math.random(),
+        x: rect.left + rect.width * 0.5,
+        y: rect.top + rect.height * 0.5
+      });
+    }
+
+    if (dur) {
       setTimeout(() => {
-        this.step++;
-        this.runNextStep();
-      }, plan.dur);
-    } else {
-      this.activeTarget = null;
-      this.isComplete = true;
+        this.removeTarget(agentName);
+      }, dur);
     }
   }
 
+  removeTarget(agentName) {
+    if (this.agentTargets[agentName]) {
+      delete this.agentTargets[agentName];
+    }
+  }
+
+  unlockDownPageSections() {
+    const downIds = [
+      "about-header", "about-bio", "about-strengths", "about-pillars",
+      "flagship-header", "flagship-core", "flagship-layers", "flagship-grid",
+      "matrix-header", "matrix-cards",
+      "exp-header", "exp-card", "edu-header", "edu-timeline",
+      "cert-header", "cert-grid",
+      "contact-header", "contact-quick", "contact-form"
+    ];
+
+    downIds.forEach((id, i) => {
+      setTimeout(() => {
+        this.builtStates[id] = true;
+        if (this.fullTexts[id]) {
+          this.typedTexts[id] = this.fullTexts[id];
+        }
+        if (i === downIds.length - 1) {
+          this.phase = "complete";
+        }
+      }, i * 70);
+    });
+  }
+
   isBuilt(id) {
-    if (this.isScanning) return false;
-    return this.builtStates[id] ?? true;
+    if (this.phase === "scanning") return false;
+    if (this.phase === "complete") return true;
+    return !!this.builtStates[id];
   }
 
   isBuilding(id) {
-    return this.activeTarget?.id === id;
+    return Object.values(this.agentTargets).some((t) => t.id === id);
+  }
+
+  getActiveTargetFor(id) {
+    return Object.values(this.agentTargets).find((t) => t.id === id) || null;
   }
 }
 

@@ -10,20 +10,20 @@
     { name: "DeepSeek-V3", color: "#FFD600" },
     { name: "Qwen-2.5", color: "#FF3399" },
     { name: "Codestral", color: "#9933FF" },
-    { name: "Mistral-Large", color: "#FF6600" },
-    { name: "Llama-3.3", color: "#33CCFF" },
+    { name: "Sovereign-1", color: "#FF6600" },
+    { name: "Quant-Prime", color: "#00FFCC" },
+    { name: "Mistral-Large", color: "#FF0055" },
+    { name: "UI-Synthesizer", color: "#33CCFF" },
     { name: "Architect", color: "#FF2A2A" },
-    { name: "Quant-Prime", color: "#00E5FF" },
+    { name: "FastAPI-Core", color: "#00E5FF" },
     { name: "Solidity-Op", color: "#FFD600" },
-    { name: "UI-Synthesizer", color: "#00FF66" },
-    { name: "FastAPI-Core", color: "#FF3399" },
-    { name: "Sovereign-1", color: "#FF2A2A" },
-    { name: "Agent-7", color: "#33CCFF" },
-    { name: "Agent-12", color: "#FFD600" },
-    { name: "Agent-18", color: "#00FF66" },
-    { name: "Agent-24", color: "#00E5FF" },
-    { name: "Agent-26", color: "#FF3399" },
-    { name: "Agent-28", color: "#FF2A2A" }
+    { name: "Llama-3.3", color: "#00FF66" },
+    { name: "Gemma-2", color: "#FF3399" },
+    { name: "Kimi-k1.5", color: "#9933FF" },
+    { name: "O3-Mini", color: "#00FFCC" },
+    { name: "Gemini-Flash", color: "#FF6600" },
+    { name: "Sonnet-3.7", color: "#FF2A2A" },
+    { name: "Command-R+", color: "#33CCFF" }
   ];
 
   let agents = $state([]);
@@ -33,11 +33,11 @@
       id: i,
       name: a.name,
       color: a.color,
-      x: 100 + Math.random() * (typeof window !== "undefined" ? window.innerWidth - 200 : 1000),
+      x: 100 + Math.random() * (typeof window !== "undefined" ? window.innerWidth - 200 : 800),
       y: 100 + Math.random() * (typeof window !== "undefined" ? window.innerHeight - 200 : 700),
       targetX: Math.random() * 1000,
       targetY: Math.random() * 700,
-      speed: 0.03 + Math.random() * 0.04,
+      speed: 0.035 + Math.random() * 0.04,
       hasBox: Math.random() > 0.65,
       boxW: 36 + Math.floor(Math.random() * 85),
       boxH: 16 + Math.floor(Math.random() * 24)
@@ -48,9 +48,8 @@
     setupAgents();
 
     const checkScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      operatorEngine.isSwarmVortex = maxScroll > 0 && scrollY > maxScroll - 380;
+      const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+      operatorEngine.isSwarmVortex = window.scrollY > scrollMax - 300;
     };
     window.addEventListener("scroll", checkScroll, { passive: true });
 
@@ -63,17 +62,19 @@
       const h = window.innerHeight;
 
       agents.forEach((agent, i) => {
-        // If this agent is the active builder for the target element
-        if (buildEngine.activeTarget && (agent.name === buildEngine.activeTarget.agent || i === 0)) {
-          const targetScreenX = buildEngine.activeTarget.x - window.scrollX;
-          const targetScreenY = buildEngine.activeTarget.y - window.scrollY;
-          agent.x += (targetScreenX - agent.x) * 0.12;
-          agent.y += (targetScreenY - agent.y) * 0.12;
+        // If this agent has an active assigned target in the build engine
+        const activeTarget = buildEngine.agentTargets[agent.name];
+        if (activeTarget) {
+          // Snap directly to the target element's screen coordinates
+          const targetScreenX = activeTarget.screenX;
+          const targetScreenY = activeTarget.screenY;
+          agent.x += (targetScreenX - agent.x) * 0.18;
+          agent.y += (targetScreenY - agent.y) * 0.18;
           return;
         }
 
         if (buildEngine.isScanning) {
-          // Circular scanning orbit around center (Matching intro_002.jpg)
+          // Circular scanning orbit around center (Matching video intro_002)
           const cx = w * 0.5;
           const cy = h * 0.5;
           const r = 90;
@@ -81,7 +82,7 @@
           agent.x += ((cx + Math.cos(a) * r) - agent.x) * 0.1;
           agent.y += ((cy + Math.sin(a) * r) - agent.y) * 0.1;
         } else if (operatorEngine.isSwarmVortex) {
-          // Synchronized flocking spiral vortex at the right of contact (Matching frame_027/028)
+          // Synchronized flocking spiral vortex at the right of contact (Matching frames 027/028)
           const centerX = w - 160;
           const centerY = h * 0.5;
           const r = 45 + (i * 6);
@@ -89,7 +90,7 @@
           agent.x += ((centerX + Math.cos(a) * r) - agent.x) * 0.07;
           agent.y += ((centerY + Math.sin(a) * r) - agent.y) * 0.07;
         } else {
-          // Autonomous inspection & roving
+          // Autonomous roving across the screen
           const dx = agent.targetX - agent.x;
           const dy = agent.targetY - agent.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -122,12 +123,18 @@
 <!-- SCANNING PHASE OVERLAY (Matches intro_002.jpg) -->
 {#if buildEngine.isScanning}
   <div class="fixed inset-0 z-[9998] bg-[#000000] flex flex-col items-center justify-center pointer-events-none select-none animate-fade-in">
-    <div class="w-14 h-14 rounded-full border border-[#1F222E] flex items-center justify-center bg-[#070709] shadow-[0_0_20px_rgba(255,42,42,0.2)]">
+    <div class="w-14 h-14 rounded-full border border-[#1F222E] flex items-center justify-center bg-[#070709] shadow-[0_0_20px_rgba(255,42,42,0.3)]">
       <span class="font-display font-black text-xs text-white tracking-widest">KP</span>
     </div>
     <div class="font-mono-cyber text-[10px] text-slate-400 mt-4 tracking-widest uppercase flex items-center gap-2">
       <span class="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-ping"></span>
       <span>Scanning page... 0/252 layers</span>
+    </div>
+
+    <!-- Center Laser Guides -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF2A2A]/40 to-transparent"></div>
+      <div class="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-[#FF2A2A]/40 to-transparent"></div>
     </div>
   </div>
 {/if}
@@ -135,7 +142,7 @@
 <!-- PLACEMENT CROSSHAIRS SCATTERED BY AGENTS (As seen in build_004) -->
 {#each buildEngine.crosshairs as ch (ch.id)}
   <div
-    class="fixed text-[9px] text-[#00E5FF]/60 font-mono-cyber pointer-events-none z-[9989]"
+    class="fixed text-[9px] text-[#00E5FF]/70 font-mono-cyber pointer-events-none z-[9989] select-none"
     style="left: {ch.x}px; top: {ch.y}px;"
   >
     +

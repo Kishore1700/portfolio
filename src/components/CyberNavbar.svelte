@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { ArrowRight, FileText } from "lucide-svelte";
+  import { buildEngine } from "../utils/buildEngine.svelte.js";
 
   let scrolled = $state(false);
 
@@ -24,7 +25,7 @@
 </script>
 
 <!-- CENTERED FLOATING ISLAND NAVBAR MATCHING VIDEO THEME -->
-<header class="fixed top-3 left-1/2 -translate-x-1/2 z-[9992] w-[95%] max-w-5xl select-none">
+<header class="fixed top-3 left-1/2 -translate-x-1/2 z-[9992] w-[95%] max-w-5xl select-none transition-opacity duration-300 {buildEngine.isScanning ? 'opacity-0 pointer-events-none' : 'opacity-100'}">
   <div class="bg-[#070709]/90 backdrop-blur-md border border-[#1A1C23] px-3.5 py-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.85)] flex items-center justify-between gap-3 font-mono-cyber text-[11px]">
     
     <!-- Left: Red Brand Badge -->
