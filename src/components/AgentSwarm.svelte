@@ -1,91 +1,89 @@
 <script>
   import { onMount } from "svelte";
 
-  // Configuration for 24 autonomous agent cursors
-  const agentTemplates = [
-    { name: "ClaudeCode", color: "#FF2A2A", role: "Architecture Core" },
-    { name: "Hermes-70B", color: "#00E5FF", role: "Quant Execution" },
-    { name: "GPT-4o", color: "#00FF66", role: "Full-Stack Synthesizer" },
-    { name: "DeepSeek-V3", color: "#FFD600", role: "Algorithmic Logic" },
-    { name: "Qwen-2.5", color: "#FF3399", role: "System Verification" },
-    { name: "Codestral", color: "#9933FF", role: "FastAPI Engine" },
-    { name: "Mistral-Large", color: "#FF6600", role: "Database Modeling" },
-    { name: "Llama-3.3", color: "#33CCFF", role: "Autonomous Loop" },
-    { name: "Sovereign-1", color: "#FF2A2A", role: "RTX 4070 Local" },
-    { name: "Architect-Prime", color: "#00E5FF", role: "State Graph" },
-    { name: "Solidity-Operator", color: "#FFD600", role: "Mainnet Dispatch" },
-    { name: "UI-Renderer", color: "#00FF66", role: "Svelte DOM Synth" },
+  // Configuration for 24 autonomous agent cursors with exact video names
+  const agentNames = [
+    { name: "ClaudeCode", color: "#FF2A2A" },
+    { name: "Hermes-70B", color: "#00E5FF" },
+    { name: "GPT-4o", color: "#00FF66" },
+    { name: "DeepSeek-V3", color: "#FFD600" },
+    { name: "Qwen-2.5", color: "#FF3399" },
+    { name: "Codestral", color: "#9933FF" },
+    { name: "Mistral-Large", color: "#FF6600" },
+    { name: "Llama-3.3", color: "#33CCFF" },
+    { name: "Architect", color: "#FF2A2A" },
+    { name: "Quant-Prime", color: "#00E5FF" },
+    { name: "Solidity-Op", color: "#FFD600" },
+    { name: "UI-Synthesizer", color: "#00FF66" },
+    { name: "FastAPI-Core", color: "#FF3399" },
+    { name: "Sovereign-1", color: "#FF2A2A" },
+    { name: "Agent-7", color: "#33CCFF" },
+    { name: "Agent-12", color: "#FFD600" },
+    { name: "Agent-18", color: "#00FF66" },
+    { name: "Agent-24", color: "#00E5FF" }
   ];
 
   let agents = $state([]);
-  let isSwarmVortex = $state(false);
-  let isTouring = $state(true);
+  let isVortex = $state(false);
 
-  // Initialize 20 active agent cursors with dynamic targets and velocities
-  function initAgents() {
-    const list = [];
-    for (let i = 0; i < 20; i++) {
-      const template = agentTemplates[i % agentTemplates.length];
-      list.push({
-        id: i,
-        name: template.name,
-        color: template.color,
-        role: template.role,
-        x: Math.random() * (typeof window !== "undefined" ? window.innerWidth : 1200),
-        y: Math.random() * (typeof window !== "undefined" ? window.innerHeight : 800),
-        targetX: Math.random() * 1200,
-        targetY: Math.random() * 800,
-        speed: 0.03 + Math.random() * 0.04,
-        boxW: 30 + Math.floor(Math.random() * 80),
-        boxH: 14 + Math.floor(Math.random() * 30),
-        hasBox: Math.random() > 0.45,
-        clickPulse: false
-      });
-    }
-    agents = list;
+  function setupAgents() {
+    agents = agentNames.map((a, i) => ({
+      id: i,
+      name: a.name,
+      color: a.color,
+      x: 100 + Math.random() * (typeof window !== "undefined" ? window.innerWidth - 200 : 1000),
+      y: 100 + Math.random() * (typeof window !== "undefined" ? window.innerHeight - 200 : 700),
+      targetX: Math.random() * 1000,
+      targetY: Math.random() * 700,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: (Math.random() - 0.5) * 1.5,
+      speed: 0.02 + Math.random() * 0.035,
+      hasBox: Math.random() > 0.6,
+      boxW: 30 + Math.floor(Math.random() * 80),
+      boxH: 14 + Math.floor(Math.random() * 26)
+    }));
   }
 
   onMount(() => {
-    initAgents();
+    setupAgents();
 
-    // Check scroll for vortex formation near the bottom (Contact)
-    const handleScroll = () => {
+    const checkScroll = () => {
       const scrollY = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      isSwarmVortex = maxScroll > 0 && scrollY > maxScroll - 400;
+      // Trigger swarm vortex when in the contact section (exact match to video frame_027/028)
+      isVortex = maxScroll > 0 && scrollY > maxScroll - 380;
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", checkScroll, { passive: true });
 
     let animId;
     let angle = 0;
 
-    const loop = () => {
-      angle += 0.02;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+    const tick = () => {
+      angle += 0.025;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
 
-      // Update positions
       agents.forEach((agent, i) => {
-        if (isSwarmVortex) {
-          // Vortex spiral mode at the right of contact section
-          const centerX = width - 180;
-          const centerY = height * 0.55;
-          const radius = 60 + (i * 5);
-          const currentAngle = angle + (i * (Math.PI * 2 / agents.length));
-          agent.x += ((centerX + Math.cos(currentAngle) * radius) - agent.x) * 0.08;
-          agent.y += ((centerY + Math.sin(currentAngle) * radius) - agent.y) * 0.08;
+        if (isVortex) {
+          // Synchronized flocking spiral at the right side of the screen
+          const centerX = w - 160;
+          const centerY = h * 0.5;
+          const r = 50 + (i * 6);
+          const a = angle + (i * (Math.PI * 2 / agents.length));
+          agent.x += ((centerX + Math.cos(a) * r) - agent.x) * 0.07;
+          agent.y += ((centerY + Math.sin(a) * r) - agent.y) * 0.07;
         } else {
-          // Autonomous roving / inspection mode
+          // Autonomous roving / inspection
           const dx = agent.targetX - agent.x;
           const dy = agent.targetY - agent.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 30 || Math.random() < 0.008) {
-            agent.targetX = Math.max(40, Math.min(width - 80, Math.random() * width));
-            agent.targetY = Math.max(60, Math.min(height - 80, Math.random() * height));
-            agent.hasBox = Math.random() > 0.4;
-            agent.boxW = 32 + Math.floor(Math.random() * 90);
-            agent.boxH = 16 + Math.floor(Math.random() * 28);
+          if (dist < 40 || Math.random() < 0.006) {
+            agent.targetX = Math.max(50, Math.min(w - 60, Math.random() * w));
+            agent.targetY = Math.max(70, Math.min(h - 70, Math.random() * h));
+            agent.hasBox = Math.random() > 0.55;
+            agent.boxW = 35 + Math.floor(Math.random() * 95);
+            agent.boxH = 16 + Math.floor(Math.random() * 24);
           } else {
             agent.x += dx * agent.speed;
             agent.y += dy * agent.speed;
@@ -93,14 +91,14 @@
         }
       });
 
-      animId = requestAnimationFrame(loop);
+      animId = requestAnimationFrame(tick);
     };
 
-    animId = requestAnimationFrame(loop);
+    animId = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", checkScroll);
     };
   });
 </script>
@@ -108,33 +106,32 @@
 <!-- Swarm Layer: Fixed, Transparent, Non-blocking -->
 <div class="fixed inset-0 pointer-events-none z-[9990] overflow-hidden select-none">
   {#each agents as agent (agent.id)}
-    <!-- Autonomous Cursor -->
     <div
-      class="absolute transition-transform duration-75 will-change-transform"
+      class="absolute will-change-transform"
       style="transform: translate3d({agent.x}px, {agent.y}px, 0);"
     >
-      <!-- CAD Selection Bounding Box if inspecting -->
-      {#if agent.hasBox && !isSwarmVortex}
+      <!-- CAD Wireframe Bounding Box (Exact as Video) -->
+      {#if agent.hasBox && !isVortex}
         <div
-          class="absolute -top-3 -left-3 border border-cyan-400/80 bg-cyan-950/20 pointer-events-none transition-all duration-200"
+          class="absolute -top-3 -left-3 border border-[#00E5FF]/80 bg-[#00E5FF]/10 pointer-events-none"
           style="width: {agent.boxW}px; height: {agent.boxH}px;"
         >
           <!-- Corner handles -->
-          <div class="absolute -top-1 -left-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
-          <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
-          <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
-          <div class="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-cyan-400 border border-black"></div>
+          <div class="absolute -top-1 -left-1 w-1.5 h-1.5 bg-[#00E5FF] border border-black"></div>
+          <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-[#00E5FF] border border-black"></div>
+          <div class="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-[#00E5FF] border border-black"></div>
+          <div class="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-[#00E5FF] border border-black"></div>
           
           <!-- Dimension Badge -->
-          <div class="absolute -bottom-4 left-0 font-mono-cyber text-[8px] text-cyan-300 bg-black/90 px-1 border border-cyan-500/40 whitespace-nowrap">
+          <div class="absolute -bottom-3.5 left-0 font-mono-cyber text-[8px] text-[#00E5FF] bg-black/95 px-1 border border-[#00E5FF]/50 whitespace-nowrap">
             {agent.boxW} &times; {agent.boxH}
           </div>
         </div>
       {/if}
 
-      <!-- Cursor Pointer SVG -->
+      <!-- Arrow Cursor -->
       <svg
-        class="w-4 h-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+        class="w-4 h-4 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -147,12 +144,12 @@
         />
       </svg>
 
-      <!-- Agent Name Badge -->
+      <!-- Label Badge -->
       <div
-        class="absolute left-3.5 top-2.5 px-1.5 py-0.5 rounded-[2px] font-mono-cyber text-[9px] font-bold text-white whitespace-nowrap flex items-center gap-1 shadow-[0_2px_10px_rgba(0,0,0,0.85)] border border-black/80"
+        class="absolute left-3.5 top-2.5 px-1.5 py-0.5 font-mono-cyber text-[8px] font-bold text-white whitespace-nowrap border border-black shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
         style="background-color: {agent.color};"
       >
-        <span>{agent.name}</span>
+        {agent.name}
       </div>
     </div>
   {/each}
