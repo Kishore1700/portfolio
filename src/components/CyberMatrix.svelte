@@ -1,63 +1,63 @@
 <script>
-  // Exact filter pills from video frame_020
   let activeFilter = $state("ALL");
 
   const filterTabs = [
     { id: "ALL", label: "All Systems (6)" },
-    { id: "AI", label: "Autonomous AI" },
-    { id: "QUANT", label: "Quant & Markets" },
-    { id: "CORE", label: "Core Engineering" }
+    { id: "LANG", label: "Languages & Core" },
+    { id: "FRONTEND", label: "Frontend & 3D" },
+    { id: "DB", label: "Databases & Cloud" },
+    { id: "AI", label: "AI & Security" }
   ];
 
-  // Exact 6 systems from video frame_020, frame_021, frame_024
+  // Kishore's real skills mapped to the Systems Matrix format
   const systems = [
     {
       id: "#SYS-01",
-      category: "AI",
-      categoryPill: "Autonomous AI",
-      title: "Multi-LLM Parliament Architecture",
-      desc: "Cognitive assembly model comprising 6 AI personality shards engaging in structured debate, cross-verification, and voting protocols to synthesize balanced decisions.",
-      pills: ["Multi-Agent", "Consensus Protocol"]
+      category: "LANG",
+      categoryPill: "Core Programming",
+      title: "Python, Java & Web Languages",
+      desc: "Primary development stack with extensive hands-on proficiency in Python (90%), JavaScript & TypeScript (90%), PHP OOP (85%), and Java & C (80%) for building robust algorithms and microservice endpoints.",
+      pills: ["Python 3", "Java OOP", "JavaScript", "TypeScript", "PHP"]
     },
     {
       id: "#SYS-02",
-      category: "AI",
-      categoryPill: "Machine Learning",
-      title: "AIT Kronos — ML Time Series Forecaster",
-      desc: "Production-grade time-series forecasting service with FastAPI backend and React/TypeScript dashboard. Complete machine learning pipeline from raw stream ingestion to checkpointing.",
-      pills: ["FastAPI", "PyTorch"]
+      category: "FRONTEND",
+      categoryPill: "Reactive Client Engine",
+      title: "Svelte 5, SvelteKit & 3D WebGL",
+      desc: "Compile-time reactive frontend engineering utilizing Svelte 5 runes ($state, $derived), Tailwind CSS v4, and raw WebGL/Three.js shaders for high-fps graphics and zero virtual DOM overhead.",
+      pills: ["Svelte 5 (92%)", "Tailwind v4 (90%)", "WebGL (85%)", "HTML5/CSS3"]
     },
     {
       id: "#SYS-03",
-      category: "AI",
-      categoryPill: "Deep Learning",
-      title: "DLFM — Dynamical Latent Field Model",
-      desc: "Experimental PyTorch CUDA neural architecture modeling complex dynamical physical and mathematical systems in a 1024-dimensional latent field via discrete integration pipelines.",
-      pills: ["PyTorch CUDA", "Latent Dynamics"]
+      category: "DB",
+      categoryPill: "Data Persistence",
+      title: "PostgreSQL, Supabase & MySQL",
+      desc: "Relational database schema modeling, index optimization, Row Level Security (RLS) policies, stored procedures, and ACID transactional guarantees across Supabase (88%) and MySQL (85%).",
+      pills: ["PostgreSQL", "Supabase RLS", "MySQL Schema", "REST APIs"]
     },
     {
       id: "#SYS-04",
-      category: "QUANT",
-      categoryPill: "Cryptographic Architecture",
-      title: "GPU-Accelerated Cryptographic Search",
-      desc: "High-performance parallel CUDA kernel pipelines executing non-linear search spaces and key collision checks with massive SIMD thread saturation.",
-      pills: ["CUDA C++", "GPU Kernels"]
+      category: "AI",
+      categoryPill: "Computer Vision & ML",
+      title: "PyTorch, OpenCV & Groq LLaMA 3.2",
+      desc: "Applied deep learning pipelines: 4x image super-resolution via ESRGAN and PyTorch, image filtering via OpenCV, and AI text classification via Groq SDK & LLaMA 3.2 for automated code auditing.",
+      pills: ["PyTorch (86%)", "OpenCV", "Groq LLaMA 3.2", "ESRGAN"]
     },
     {
       id: "#SYS-05",
-      category: "QUANT",
-      categoryPill: "Financial Architecture",
-      title: "Hedge Fund Structure & Institutional Design",
-      desc: "End-to-end fund architecture design applying systems engineering to quantitative finance. LP/GP governance, 2/20 fee watermarking, KYC/AML compliance, and risk routing.",
-      pills: ["LP/GP Architecture", "Risk Modeling"]
+      category: "AI",
+      categoryPill: "Cyber Security & Auditing",
+      title: "Sensitive Data Audit & Validation",
+      desc: "Security audit suites for detecting leaked credentials, entropy analysis on codebases, JWT/bcrypt authentication, and strict end-to-end schema validation via Zod and Playwright tests.",
+      pills: ["Secret Scanning (85%)", "Zod", "Playwright (82%)", "JWT Auth"]
     },
     {
       id: "#SYS-06",
-      category: "CORE",
-      categoryPill: "AI Philosophy",
-      title: "Axiom of Truth Cognitive Framework",
-      desc: "Epistemological cognitive foundation designed to anchor AI agents against hallucination and sycophancy. Enforces strict factual truth verification before token generation.",
-      pills: ["Epistemology", "Verification"]
+      category: "LANG",
+      categoryPill: "Engineering Tooling",
+      title: "Git, Vite, jsPDF & Build Pipeline",
+      desc: "Production software delivery tooling: Git version control (88%), Vite build pipeline, automated client-side PDF document generation via jsPDF, Docker containerization, and Apache environments.",
+      pills: ["Git & GitHub (88%)", "Vite", "jsPDF", "Docker", "Apache"]
     }
   ];
 
@@ -79,7 +79,7 @@
         The Systems Matrix
       </h2>
       <p class="font-sans-cyber text-xs text-slate-400 max-w-xl leading-relaxed">
-        Specialized architectures spanning multi-LLM cognitive assemblies, deep learning latent models, and GPU cryptography.
+        Specialized engineering capabilities across programming languages, reactive frontends, database persistence, and AI/security auditing.
       </p>
     </div>
 
@@ -98,7 +98,7 @@
       {/each}
     </div>
 
-    <!-- Systems Grid (Exact Cards from Video Frame_020 and 021) -->
+    <!-- Systems Grid with Kishore's Real Skills -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {#each filtered as sys (sys.id)}
         <div class="cyber-card p-5 flex flex-col justify-between group space-y-4">
