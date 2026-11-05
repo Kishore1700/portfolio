@@ -1,5 +1,6 @@
 <script>
   import { Award, ShieldCheck, CheckCircle, Code, ExternalLink } from "lucide-svelte";
+  import CadTarget from "./CadTarget.svelte";
 
   const certs = [
     {
@@ -48,20 +49,23 @@
 <section id="certifications" class="relative py-20 px-4 sm:px-6 lg:px-8 border-t border-[#14161F] select-none">
   <div class="max-w-7xl mx-auto space-y-8">
     
-    <div class="space-y-1">
-      <div class="font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase">
-        VERIFIED CREDENTIALS
+    <CadTarget id="cert-header" label="240 × 28">
+      <div class="space-y-1">
+        <div class="font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase">
+          VERIFIED CREDENTIALS
+        </div>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl text-white tracking-tight">
+          Industry Certifications
+        </h2>
+        <p class="font-sans-cyber text-xs text-slate-400 max-w-xl">
+          Accredited specializations in cloud architectures, Java programming, RPA, and applied AI.
+        </p>
       </div>
-      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white tracking-tight">
-        Industry Certifications
-      </h2>
-      <p class="font-sans-cyber text-xs text-slate-400 max-w-xl">
-        Accredited specializations in cloud architectures, Java programming, RPA, and applied AI.
-      </p>
-    </div>
+    </CadTarget>
 
     <!-- Certifications Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <CadTarget id="cert-grid" label="720 × 200">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {#each certs as cert}
         {@const Icon = cert.icon}
         <div class="cyber-card p-5 flex flex-col justify-between group space-y-4">
@@ -94,6 +98,8 @@
         </div>
       {/each}
     </div>
+    </CadTarget>
 
   </div>
 </section>
+

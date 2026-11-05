@@ -1,4 +1,6 @@
 <script>
+  import CadTarget from "./CadTarget.svelte";
+
   let activeFilter = $state("ALL");
 
   const filterTabs = [
@@ -71,68 +73,74 @@
   <div class="max-w-7xl mx-auto space-y-8">
     
     <!-- Section Header (Exact as Video Frame_020) -->
-    <div class="space-y-1">
-      <div class="font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase">
-        ENGINEERING INDEX
-      </div>
-      <h2 class="font-display font-bold text-3xl sm:text-4xl text-white tracking-tight">
-        The Systems Matrix
-      </h2>
-      <p class="font-sans-cyber text-xs text-slate-400 max-w-xl leading-relaxed">
-        Specialized engineering capabilities across programming languages, reactive frontends, database persistence, and AI/security auditing.
-      </p>
-    </div>
+    <CadTarget id="matrix-header" label="260 × 28">
+      <div class="space-y-4">
+        <div class="space-y-1">
+          <div class="font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase">
+            ENGINEERING INDEX
+          </div>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-white tracking-tight">
+            The Systems Matrix
+          </h2>
+          <p class="font-sans-cyber text-xs text-slate-400 max-w-xl leading-relaxed">
+            Specialized engineering capabilities across programming languages, reactive frontends, database persistence, and AI/security auditing.
+          </p>
+        </div>
 
-    <!-- Filter Pills (Exact from Video Frame_020) -->
-    <div class="flex flex-wrap items-center gap-2">
-      {#each filterTabs as tab}
-        <button
-          type="button"
-          onclick={() => (activeFilter = tab.id)}
-          class="px-3 py-1 font-mono-cyber text-[10px] tracking-wider transition-all cursor-pointer border {activeFilter === tab.id
-            ? 'cyber-badge-red border-[#FF2A2A]'
-            : 'bg-[#0A0B0E] text-slate-400 border-[#1A1C23] hover:text-white'}"
-        >
-          {tab.label}
-        </button>
-      {/each}
-    </div>
+        <!-- Filter Pills (Exact from Video Frame_020) -->
+        <div class="flex flex-wrap items-center gap-2">
+          {#each filterTabs as tab}
+            <button
+              type="button"
+              onclick={() => (activeFilter = tab.id)}
+              class="px-3 py-1 font-mono-cyber text-[10px] tracking-wider transition-all cursor-pointer border {activeFilter === tab.id
+                ? 'cyber-badge-red border-[#FF2A2A]'
+                : 'bg-[#0A0B0E] text-slate-400 border-[#1A1C23] hover:text-white'}"
+            >
+              {tab.label}
+            </button>
+          {/each}
+        </div>
+      </div>
+    </CadTarget>
 
     <!-- Systems Grid with Kishore's Real Skills -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {#each filtered as sys (sys.id)}
-        <div class="cyber-card p-5 flex flex-col justify-between group space-y-4">
-          
-          <div class="space-y-2">
-            <!-- Category and ID -->
-            <div class="flex items-center justify-between font-mono-cyber text-[9px] pb-1 border-b border-[#1A1C23]">
-              <span class="text-[#FF2A2A] font-bold">{sys.categoryPill}</span>
-              <span class="text-slate-500">{sys.id}</span>
+    <CadTarget id="matrix-cards" label="720 × 240">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {#each filtered as sys (sys.id)}
+          <div class="cyber-card p-5 flex flex-col justify-between group space-y-4">
+            
+            <div class="space-y-2">
+              <!-- Category and ID -->
+              <div class="flex items-center justify-between font-mono-cyber text-[9px] pb-1 border-b border-[#1A1C23]">
+                <span class="text-[#FF2A2A] font-bold">{sys.categoryPill}</span>
+                <span class="text-slate-500">{sys.id}</span>
+              </div>
+
+              <!-- Title -->
+              <h3 class="font-display font-bold text-sm sm:text-base text-white group-hover:text-[#FF2A2A] transition-colors leading-snug">
+                {sys.title}
+              </h3>
+
+              <!-- Description -->
+              <p class="font-sans-cyber text-xs text-slate-300 leading-relaxed">
+                {sys.desc}
+              </p>
             </div>
 
-            <!-- Title -->
-            <h3 class="font-display font-bold text-sm sm:text-base text-white group-hover:text-[#FF2A2A] transition-colors leading-snug">
-              {sys.title}
-            </h3>
+            <!-- Bottom Pills -->
+            <div class="pt-3 border-t border-[#1A1C23] flex flex-wrap gap-1">
+              {#each sys.pills as pill}
+                <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-slate-400 font-mono-cyber text-[9px]">
+                  {pill}
+                </span>
+              {/each}
+            </div>
 
-            <!-- Description -->
-            <p class="font-sans-cyber text-xs text-slate-300 leading-relaxed">
-              {sys.desc}
-            </p>
           </div>
-
-          <!-- Bottom Pills -->
-          <div class="pt-3 border-t border-[#1A1C23] flex flex-wrap gap-1">
-            {#each sys.pills as pill}
-              <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-slate-400 font-mono-cyber text-[9px]">
-                {pill}
-              </span>
-            {/each}
-          </div>
-
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    </CadTarget>
 
   </div>
 </section>

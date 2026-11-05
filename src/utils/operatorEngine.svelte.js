@@ -1,4 +1,6 @@
 // Autonomous Operator Engine State (Svelte 5 Runes)
+import { buildEngine } from "./buildEngine.svelte.js";
+
 export class OperatorEngine {
   phase = $state("scanning"); // 'scanning' | 'wireframing' | 'assembled'
   isTouring = $state(true);
@@ -69,7 +71,9 @@ export class OperatorEngine {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     this.startLifecycle();
+    buildEngine.initSequence();
   }
 }
 
 export const operatorEngine = new OperatorEngine();
+

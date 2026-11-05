@@ -1,15 +1,16 @@
 <script>
   import { ArrowRight, FileText } from "lucide-svelte";
+  import CadTarget from "./CadTarget.svelte";
 </script>
 
 <section id="hero" class="relative min-h-screen flex flex-col justify-center pt-20 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden select-none">
   
-  <!-- Giant Wireframe Outline PORTFOLIO Typography in Background (As in Video) -->
-  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0 w-full text-center overflow-hidden">
+  <!-- Giant Wireframe Outline PORTFOLIO Typography in Background (Built first by Architect) -->
+  <CadTarget id="port-wireframe" label="1021 × 336" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none z-0 w-full text-center overflow-hidden">
     <span class="text-outline-cyber font-display font-extrabold text-[19vw] leading-none opacity-45 uppercase block tracking-tighter">
       PORTFOLIO
     </span>
-  </div>
+  </CadTarget>
 
   <div class="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
     
@@ -18,84 +19,92 @@
       
       <!-- Script Greeting + Red Brand Badge -->
       <div class="space-y-1">
-        <div class="font-body italic text-white text-base sm:text-lg">
-          Hello, I'm
-        </div>
-        <div class="inline-block">
+        <CadTarget id="hero-greet" label="84 × 22">
+          <div class="font-body italic text-white text-base sm:text-lg">
+            Hello, I'm
+          </div>
+        </CadTarget>
+
+        <CadTarget id="hero-name" label="128 × 48" class="inline-block">
           <h1 class="cyber-badge-red text-4xl sm:text-5xl md:text-6xl px-3.5 py-1 font-display font-black tracking-tight uppercase">
             KISHORE.
           </h1>
-        </div>
+        </CadTarget>
       </div>
 
       <!-- Black Pill with Red Dot -->
-      <div class="inline-flex items-center gap-2 px-2 py-0.5 bg-[#050608] border border-[#1A1C23]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#FF2A2A] shadow-[0_0_8px_#FF2A2A]"></span>
-        <span class="font-mono-cyber text-[9px] text-slate-300 font-bold uppercase tracking-wider">
-          FULL-STACK DEVELOPER & MCA SCHOLAR
-        </span>
-      </div>
+      <CadTarget id="hero-role" label="291 × 13" class="inline-block">
+        <div class="inline-flex items-center gap-2 px-2 py-0.5 bg-[#050608] border border-[#1A1C23]">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#FF2A2A] shadow-[0_0_8px_#FF2A2A]"></span>
+          <span class="font-mono-cyber text-[9px] text-slate-300 font-bold uppercase tracking-wider">
+            FULL-STACK DEVELOPER & MCA SCHOLAR
+          </span>
+        </div>
+      </CadTarget>
 
       <!-- High-impact Narrative Paragraph with Kishore's Real Education & Stack -->
-      <p class="font-sans-cyber text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md">
-        Master of Computer Applications candidate at <strong class="text-white">Sona College of Technology</strong>. Engineering high-concurrency backend services, reactive web architectures, and full-stack software from first principles — zero bloat, total performance.
-      </p>
+      <CadTarget id="hero-bio" label="425 × 71">
+        <p class="font-sans-cyber text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md">
+          Master of Computer Applications candidate at <strong class="text-white">Sona College of Technology</strong>. Engineering high-concurrency backend services, reactive web architectures, and full-stack software from first principles — zero bloat, total performance.
+        </p>
+      </CadTarget>
 
       <!-- Primary Action Buttons -->
-      <div class="flex flex-wrap items-center gap-2.5 pt-1">
-        <a
-          href="#contact"
-          class="cyber-btn-primary !py-2 !px-4 text-[11px] flex items-center gap-2"
-        >
-          <span>INITIATE DISPATCH</span>
-          <ArrowRight class="w-3.5 h-3.5" />
-        </a>
+      <CadTarget id="hero-buttons" label="260 × 40">
+        <div class="flex flex-wrap items-center gap-2.5 pt-1">
+          <a
+            href="#contact"
+            class="cyber-btn-primary !py-2 !px-4 text-[11px] flex items-center gap-2"
+          >
+            <span>INITIATE DISPATCH</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </a>
 
-        <a
-          href="#flagships"
-          class="cyber-btn-secondary !py-2 !px-4 text-[11px]"
-        >
-          <span>EXPLORE ARCHITECTURE</span>
-        </a>
+          <a
+            href="#flagships"
+            class="cyber-btn-secondary !py-2 !px-4 text-[11px]"
+          >
+            <span>EXPLORE ARCHITECTURE</span>
+          </a>
 
-        <a
-          href="/Kishore_Resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="cyber-btn-secondary !py-2 !px-3 text-[11px] flex items-center gap-1.5"
-          title="Download Kishore's Resume PDF"
-        >
-          <FileText class="w-3.5 h-3.5 text-[#00E5FF]" />
-          <span>RESUME</span>
-        </a>
-      </div>
+          <a
+            href="/Kishore_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cyber-btn-secondary !py-2 !px-3 text-[11px] flex items-center gap-1.5"
+            title="Download Kishore's Resume PDF"
+          >
+            <FileText class="w-3.5 h-3.5 text-[#00E5FF]" />
+            <span>RESUME</span>
+          </a>
+        </div>
+      </CadTarget>
 
       <!-- Telemetry Numbers with Kishore's Real Data -->
-      <div class="grid grid-cols-3 gap-2 pt-4 border-t border-[#1A1C23] max-w-sm">
-        <div>
-          <span class="font-mono-cyber text-xs sm:text-sm font-bold text-[#FF2A2A] block">6+ Repos</span>
-          <span class="font-mono-cyber text-[9px] text-slate-400 block">Production Code</span>
+      <CadTarget id="hero-metrics" label="340 × 44">
+        <div class="grid grid-cols-3 gap-2 pt-4 border-t border-[#1A1C23] max-w-sm">
+          <div>
+            <span class="font-mono-cyber text-xs sm:text-sm font-bold text-[#FF2A2A] block">6+ Repos</span>
+            <span class="font-mono-cyber text-[9px] text-slate-400 block">Production Code</span>
+          </div>
+          <div>
+            <span class="font-mono-cyber text-xs sm:text-sm font-bold text-white block">MCA Scholar</span>
+            <span class="font-mono-cyber text-[9px] text-slate-400 block">Sona College</span>
+          </div>
+          <div>
+            <span class="font-mono-cyber text-xs sm:text-sm font-bold text-[#00FF66] block">7.6 / 10</span>
+            <span class="font-mono-cyber text-[9px] text-slate-400 block">Current CGPA</span>
+          </div>
         </div>
-        <div>
-          <span class="font-mono-cyber text-xs sm:text-sm font-bold text-white block">MCA Scholar</span>
-          <span class="font-mono-cyber text-[9px] text-slate-400 block">Sona College</span>
-        </div>
-        <div>
-          <span class="font-mono-cyber text-xs sm:text-sm font-bold text-[#00FF66] block">7.6 / 10</span>
-          <span class="font-mono-cyber text-[9px] text-slate-400 block">Current CGPA</span>
-        </div>
-      </div>
+      </CadTarget>
 
     </div>
 
     <!-- CENTER 3 COLUMNS: Red Solid Square Portrait Frame with Sovereign Silicon Badge -->
     <div class="lg:col-span-3 flex justify-center">
-      <div class="relative w-full max-w-[260px]">
-        
+      <CadTarget id="hero-portrait" label="240 × 250" class="w-full max-w-[260px]">
         <!-- Red Solid Square Frame (Matching Video Frame_003) -->
         <div class="bg-[#FF2A2A] p-2 relative shadow-[0_0_40px_rgba(255,42,42,0.25)] border border-[#FF4444]">
-          
-          <!-- Silhouette / Portrait -->
           <div class="w-full aspect-square bg-[#050608] flex flex-col items-center justify-center relative overflow-hidden">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,42,42,0.25)_0%,transparent_75%)]"></div>
 
@@ -121,68 +130,69 @@
               // SOVEREIGN SILICON ACTIVE
             </span>
           </div>
-
         </div>
-
-      </div>
+      </CadTarget>
     </div>
 
     <!-- RIGHT 4 COLUMNS: 3 Runtime Modules & Kishore's Real Tech Tags -->
     <div class="lg:col-span-4 space-y-4">
-      
-      <!-- Module 01 -->
-      <div class="cyber-card p-3 font-mono-cyber space-y-1">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-white flex items-center gap-1.5">
-            <span class="text-[#FF2A2A]">01.</span>
-            <span>Enterprise Backend Core</span>
-          </span>
-          <span class="text-[8px] text-[#00FF66] bg-black px-1.5 py-0.5 border border-[#1A1C23]">RUNTIME</span>
+      <CadTarget id="hero-runtimes" label="280 × 160" class="space-y-4">
+        <!-- Module 01 -->
+        <div class="cyber-card p-3 font-mono-cyber space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span class="text-[#FF2A2A]">01.</span>
+              <span>Enterprise Backend Core</span>
+            </span>
+            <span class="text-[8px] text-[#00FF66] bg-black px-1.5 py-0.5 border border-[#1A1C23]">RUNTIME</span>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-tight">
+            Python AsyncIO &bull; Enterprise Java &bull; Supabase PostgreSQL &bull; REST APIs.
+          </p>
         </div>
-        <p class="text-[10px] text-slate-400 leading-tight">
-          Python AsyncIO &bull; Enterprise Java &bull; Supabase PostgreSQL &bull; REST APIs.
-        </p>
-      </div>
 
-      <!-- Module 02 -->
-      <div class="cyber-card p-3 font-mono-cyber space-y-1">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-white flex items-center gap-1.5">
-            <span class="text-[#FF2A2A]">02.</span>
-            <span>Reactive Web Engine</span>
-          </span>
-          <span class="text-[8px] text-[#00E5FF] bg-black px-1.5 py-0.5 border border-[#1A1C23]">PRODUCTION</span>
+        <!-- Module 02 -->
+        <div class="cyber-card p-3 font-mono-cyber space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span class="text-[#FF2A2A]">02.</span>
+              <span>Reactive Web Engine</span>
+            </span>
+            <span class="text-[8px] text-[#00E5FF] bg-black px-1.5 py-0.5 border border-[#1A1C23]">PRODUCTION</span>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-tight">
+            Svelte 5 Runes &bull; SvelteKit 2 &bull; Tailwind CSS v4 &bull; WebGL Shaders.
+          </p>
         </div>
-        <p class="text-[10px] text-slate-400 leading-tight">
-          Svelte 5 Runes &bull; SvelteKit 2 &bull; Tailwind CSS v4 &bull; WebGL Shaders.
-        </p>
-      </div>
 
-      <!-- Module 03 -->
-      <div class="cyber-card p-3 font-mono-cyber space-y-1">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-white flex items-center gap-1.5">
-            <span class="text-[#FF2A2A]">03.</span>
-            <span>AI & Computer Vision</span>
-          </span>
-          <span class="text-[8px] text-[#FFD600] bg-black px-1.5 py-0.5 border border-[#1A1C23]">EXECUTION</span>
+        <!-- Module 03 -->
+        <div class="cyber-card p-3 font-mono-cyber space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span class="text-[#FF2A2A]">03.</span>
+              <span>AI & Computer Vision</span>
+            </span>
+            <span class="text-[8px] text-[#FFD600] bg-black px-1.5 py-0.5 border border-[#1A1C23]">EXECUTION</span>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-tight">
+            PyTorch &bull; OpenCV &bull; ESRGAN 4x Super-Resolution &bull; Groq LLaMA 3.2.
+          </p>
         </div>
-        <p class="text-[10px] text-slate-400 leading-tight">
-          PyTorch &bull; OpenCV &bull; ESRGAN 4x Super-Resolution &bull; Groq LLaMA 3.2.
-        </p>
-      </div>
+      </CadTarget>
 
       <!-- Tech Tags Row with Kishore's Real Stack -->
-      <div class="pt-2 flex flex-wrap gap-1.5 font-mono-cyber text-[9px] text-slate-400">
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#FF2A2A]">Python</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#00E5FF]">Svelte 5</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-white">Java</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#00FF66]">PostgreSQL</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">FastAPI</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">PHP</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">MySQL</span>
-        <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">Git</span>
-      </div>
+      <CadTarget id="hero-tags" label="260 × 30">
+        <div class="pt-2 flex flex-wrap gap-1.5 font-mono-cyber text-[9px] text-slate-400">
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#FF2A2A]">Python</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#00E5FF]">Svelte 5</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-white">Java</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23] text-[#00FF66]">PostgreSQL</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">FastAPI</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">PHP</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">MySQL</span>
+          <span class="px-2 py-0.5 bg-black border border-[#1A1C23]">Git</span>
+        </div>
+      </CadTarget>
 
     </div>
 
