@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 
-export type BuildState = "UNBUILT" | "BUILDING" | "BUILT";
+export type BuildState = "UNBUILT" | "QUEUED" | "BUILDING" | "BUILT";
 
 export interface AgentCursor {
   id: string;
@@ -16,6 +16,11 @@ export interface AgentCursor {
   assignedTargetId?: string;
 }
 
+interface QueuedItem {
+  id: string;
+  rect: DOMRect;
+}
+
 interface SwarmBuilderContextType {
   states: Record<string, BuildState>;
   speedMultiplier: number;
@@ -24,16 +29,17 @@ interface SwarmBuilderContextType {
   isAllBuilt: boolean;
   agents: AgentCursor[];
   registerElement: (id: string) => void;
-  triggerBuild: (id: string, rect?: DOMRect) => void;
+  requestBuild: (id: string, rect?: DOMRect) => void;
   setSpeedMultiplier: (speed: number) => void;
   cycleSpeed: () => void;
   skipAll: () => void;
   replay: () => void;
   isElementBuilt: (id: string) => boolean;
   isElementBuilding: (id: string) => boolean;
+  isElementUnbuilt: (id: string) => boolean;
 }
 
-const INITIAL_AGENTS: Omit<AgentCursor, "x" | "y" | "targetX" | "targetY" | "isAssigned">[] = [
+const INITIAL_AGENTS: { id: string; name: string; color: string }[] = [
   { id: "agent_01", name: "agent_01", color: "#DC2626" },
   { id: "agent_02", name: "agent_02", color: "#3B82F6" },
   { id: "agent_03", name: "agent_03", color: "#10B981" },
@@ -57,13 +63,16 @@ const SwarmBuilderContext = createContext<SwarmBuilderContextType | undefined>(u
 export function SwarmBuilderProvider({ children }: { children: React.ReactNode }) {
   const [states, setStates] = useState<Record<string, BuildState>>({});
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
+  const queueRef = useRef<QueuedItem[]>([]);
+  const isProcessingQueue = useRef<boolean>(false);
+
   const [agents, setAgents] = useState<AgentCursor[]>(() =>
     INITIAL_AGENTS.map((a, i) => ({
       ...a,
-      x: 100 + (i * 50) % 800,
-      y: 100 + Math.floor(i / 4) * 80,
-      targetX: 100 + (i * 50) % 800,
-      targetY: 100 + Math.floor(i / 4) * 80,
+      x: 100 + (i * 60) % 900,
+      y: 100 + Math.floor(i / 4) * 90,
+      targetX: 100 + (i * 60) % 900,
+      targetY: 100 + Math.floor(i / 4) * 90,
       isAssigned: false,
     }))
   );
@@ -83,52 +92,82 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  const triggerBuild = useCallback(
+  // Process queue sequentially with staggered concurrency (max 2 items building simultaneously)
+  const processQueue = useCallback(() => {
+    if (isProcessingQueue.current) return;
+    if (queueRef.current.length === 0) return;
+
+    isProcessingQueue.current = true;
+    const item = queueRef.current.shift();
+    if (!item) {
+      isProcessingQueue.current = false;
+      return;
+    }
+
+    const { id, rect } = item;
+
+    // Set element state to BUILDING
+    setStates((prev) => ({ ...prev, [id]: "BUILDING" }));
+
+    // Dispatch 2-4 nearby agent cursors to bounding box
+    setAgents((prev) => {
+      // Find 3 available agents
+      const unassignedIndices: number[] = [];
+      prev.forEach((a, idx) => {
+        if (!a.isAssigned) unassignedIndices.push(idx);
+      });
+      const chosenIndices = (unassignedIndices.length >= 3 ? unassignedIndices : prev.map((_, i) => i)).slice(0, 3);
+
+      return prev.map((agent, idx) => {
+        if (chosenIndices.includes(idx)) {
+          const offsetX = (Math.random() - 0.5) * Math.min(rect.width * 0.8, 300);
+          const offsetY = (Math.random() - 0.5) * Math.min(rect.height * 0.8, 120);
+          return {
+            ...agent,
+            targetX: Math.max(20, rect.left + rect.width / 2 + offsetX),
+            targetY: Math.max(20, rect.top + rect.height / 2 + offsetY),
+            isAssigned: true,
+            assignedTargetId: id,
+          };
+        }
+        return agent;
+      });
+    });
+
+    // Building duration (650ms adjusted by speedMultiplier)
+    const baseDuration = 650;
+    const duration = baseDuration / speedMultiplier;
+
+    setTimeout(() => {
+      // Mark BUILT
+      setStates((prev) => ({ ...prev, [id]: "BUILT" }));
+
+      // Release assigned agents
+      setAgents((prev) =>
+        prev.map((a) => (a.assignedTargetId === id ? { ...a, isAssigned: false, assignedTargetId: undefined } : a))
+      );
+
+      isProcessingQueue.current = false;
+      // Stagger to next queued item
+      setTimeout(() => {
+        processQueue();
+      }, 50 / speedMultiplier);
+    }, duration);
+  }, [speedMultiplier]);
+
+  const requestBuild = useCallback(
     (id: string, rect?: DOMRect) => {
       setStates((prev) => {
-        if (prev[id] === "BUILDING" || prev[id] === "BUILT") return prev;
-        return { ...prev, [id]: "BUILDING" };
+        if (prev[id] === "BUILDING" || prev[id] === "BUILT" || prev[id] === "QUEUED") return prev;
+        return { ...prev, [id]: "QUEUED" };
       });
 
-      // Dispatch 2 to 4 cursors to the target element's bounding box
       if (rect) {
-        setAgents((prevAgents) => {
-          const availableIndices = prevAgents
-            .map((a, idx) => ({ idx, isAssigned: a.isAssigned }))
-            .sort((a, b) => (a.isAssigned === b.isAssigned ? 0 : a.isAssigned ? 1 : -1))
-            .slice(0, 3)
-            .map((item) => item.idx);
-
-          return prevAgents.map((agent, idx) => {
-            if (availableIndices.includes(idx)) {
-              const offsetX = (Math.random() - 0.5) * (rect.width * 0.7);
-              const offsetY = (Math.random() - 0.5) * (rect.height * 0.7);
-              return {
-                ...agent,
-                targetX: rect.left + rect.width / 2 + offsetX,
-                targetY: rect.top + rect.height / 2 + offsetY,
-                isAssigned: true,
-                assignedTargetId: id,
-              };
-            }
-            return agent;
-          });
-        });
+        queueRef.current.push({ id, rect });
+        processQueue();
       }
-
-      // Building duration (600ms - 900ms adjusted by speedMultiplier)
-      const baseDuration = 750;
-      const duration = baseDuration / speedMultiplier;
-
-      setTimeout(() => {
-        setStates((prev) => ({ ...prev, [id]: "BUILT" }));
-        // Release assigned agents
-        setAgents((prev) =>
-          prev.map((a) => (a.assignedTargetId === id ? { ...a, isAssigned: false, assignedTargetId: undefined } : a))
-        );
-      }, duration);
     },
-    [speedMultiplier]
+    [processQueue]
   );
 
   const cycleSpeed = useCallback(() => {
@@ -140,6 +179,8 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const skipAll = useCallback(() => {
+    queueRef.current = [];
+    isProcessingQueue.current = false;
     setStates((prev) => {
       const next: Record<string, BuildState> = {};
       Object.keys(prev).forEach((k) => {
@@ -151,6 +192,8 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const replay = useCallback(() => {
+    queueRef.current = [];
+    isProcessingQueue.current = false;
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -164,10 +207,10 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
     setAgents((prev) =>
       prev.map((a, i) => ({
         ...a,
-        x: 100 + (i * 50) % 800,
-        y: 100 + Math.floor(i / 4) * 80,
-        targetX: 100 + (i * 50) % 800,
-        targetY: 100 + Math.floor(i / 4) * 80,
+        x: 100 + (i * 60) % 900,
+        y: 100 + Math.floor(i / 4) * 90,
+        targetX: 100 + (i * 60) % 900,
+        targetY: 100 + Math.floor(i / 4) * 90,
         isAssigned: false,
         assignedTargetId: undefined,
       }))
@@ -176,8 +219,9 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
 
   const isElementBuilt = useCallback((id: string) => states[id] === "BUILT", [states]);
   const isElementBuilding = useCallback((id: string) => states[id] === "BUILDING", [states]);
+  const isElementUnbuilt = useCallback((id: string) => states[id] === "UNBUILT" || states[id] === "QUEUED", [states]);
 
-  // Swarm idle roving and footer orbit loop
+  // Idle roaming & footer circle orbit
   useEffect(() => {
     let animId: number;
     let angle = 0;
@@ -190,48 +234,34 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
       setAgents((prev) =>
         prev.map((agent, i) => {
           if (agent.isAssigned) {
-            // Spring towards target
-            const dx = agent.targetX - agent.x;
-            const dy = agent.targetY - agent.y;
-            return {
-              ...agent,
-              x: agent.x + dx * 0.14 * speedMultiplier,
-              y: agent.y + dy * 0.14 * speedMultiplier,
-            };
+            // Target is assigned, position is driven by Framer Motion or spring physics
+            return agent;
           }
 
           if (isAllBuilt) {
-            // Idle Orbit on right side of screen / footer
-            const centerX = w - 160;
-            const centerY = h * 0.6;
-            const radius = 60 + (i % 6) * 14;
+            // Idle Orbit on right side of footer
+            const centerX = w - 180;
+            const centerY = h * 0.55;
+            const radius = 55 + (i % 6) * 16;
             const a = angle + (i * (Math.PI * 2 / 16));
-            const targetX = centerX + Math.cos(a) * radius;
-            const targetY = centerY + Math.sin(a) * radius;
             return {
               ...agent,
-              x: agent.x + (targetX - agent.x) * 0.08,
-              y: agent.y + (targetY - agent.y) * 0.08,
+              targetX: centerX + Math.cos(a) * radius,
+              targetY: centerY + Math.sin(a) * radius,
             };
           }
 
-          // Random autonomous roving
+          // Random roaming
           const dist = Math.hypot(agent.targetX - agent.x, agent.targetY - agent.y);
-          if (dist < 30 || Math.random() < 0.008) {
-            const nextX = Math.max(50, Math.min(w - 70, Math.random() * w));
-            const nextY = Math.max(70, Math.min(h - 70, Math.random() * h));
+          if (dist < 30 || Math.random() < 0.007) {
             return {
               ...agent,
-              targetX: nextX,
-              targetY: nextY,
+              targetX: Math.max(40, Math.min(w - 70, Math.random() * w)),
+              targetY: Math.max(70, Math.min(h - 70, Math.random() * h)),
             };
           }
 
-          return {
-            ...agent,
-            x: agent.x + (agent.targetX - agent.x) * 0.04 * speedMultiplier,
-            y: agent.y + (agent.targetY - agent.y) * 0.04 * speedMultiplier,
-          };
+          return agent;
         })
       );
 
@@ -252,13 +282,14 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         isAllBuilt,
         agents,
         registerElement,
-        triggerBuild,
+        requestBuild,
         setSpeedMultiplier,
         cycleSpeed,
         skipAll,
         replay,
         isElementBuilt,
         isElementBuilding,
+        isElementUnbuilt,
       }}
     >
       {children}
@@ -273,4 +304,3 @@ export function useSwarmBuilder() {
   }
   return context;
 }
-

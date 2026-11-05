@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { useSwarmBuilder } from "@/context/SwarmBuilderContext";
 
 export function SwarmOverlay() {
@@ -9,16 +10,20 @@ export function SwarmOverlay() {
   return (
     <div className="fixed inset-0 pointer-events-none z-[9990] overflow-hidden select-none">
       {agents.map((agent) => (
-        <div
+        <motion.div
           key={agent.id}
-          className="absolute will-change-transform transition-transform duration-75 ease-out"
-          style={{
-            transform: `translate3d(${agent.x}px, ${agent.y}px, 0)`,
+          className="absolute will-change-transform"
+          animate={{ x: agent.targetX, y: agent.targetY }}
+          transition={{
+            type: "spring",
+            damping: 24,
+            stiffness: 160,
+            mass: 0.5,
           }}
         >
           {/* Arrow Cursor SVG */}
           <svg
-            className="w-4 h-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            className="w-4 h-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -38,9 +43,8 @@ export function SwarmOverlay() {
           >
             {agent.name}
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
 }
-
