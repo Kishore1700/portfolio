@@ -21,30 +21,30 @@ export class OperatorEngine {
     this.agentCount = 18;
     this.elapsedSeconds = 0;
 
-    // 0.9s scanning orbit
+    // Phase 0: Scanning orbit (1.2s)
     setTimeout(() => {
       this.phase = "wireframing";
-      this.builtLayers = 13;
+      this.builtLayers = 24;
 
-      // Begin counting layers in tandem with buildEngine
+      // Phase 1: Wireframing CAD layout (1.4s)
       setTimeout(() => {
         this.phase = "assembled";
         this.startLayerCounter();
         this.startTimer();
-      }, 400);
-    }, 900);
+      }, 1400);
+    }, 1200);
   }
 
   startLayerCounter() {
     const interval = setInterval(() => {
       if (this.builtLayers < this.totalLayers) {
-        this.builtLayers = Math.min(this.totalLayers, this.builtLayers + Math.floor(Math.random() * 6 + 4));
+        this.builtLayers = Math.min(this.totalLayers, this.builtLayers + Math.floor(Math.random() * 8 + 3));
         if (this.builtLayers > 180) this.agentCount = 28;
-        else if (this.builtLayers > 80) this.agentCount = 22;
+        else if (this.builtLayers > 90) this.agentCount = 22;
       } else {
         clearInterval(interval);
       }
-    }, 110);
+    }, 120);
   }
 
   startTimer() {
@@ -76,3 +76,4 @@ export class OperatorEngine {
 }
 
 export const operatorEngine = new OperatorEngine();
+

@@ -1,7 +1,6 @@
 <script>
   import { Github, Linkedin, Mail, MapPin, Copy, Check, Send, AlertCircle, ArrowUpRight } from "lucide-svelte";
   import confetti from "canvas-confetti";
-  import CadTarget from "./CadTarget.svelte";
 
   let copied = $state(false);
   const email = "kishorekishorei170@gmail.com";
@@ -53,50 +52,45 @@
   <div class="max-w-4xl mx-auto space-y-10 relative z-10">
     
     <!-- Red Small Tag (Exact as Video Frame_024) -->
-    <CadTarget id="contact-header" label="380 × 42">
-      <div class="text-center space-y-2">
-        <div class="inline-block font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase px-2.5 py-1 bg-[#120404] border border-[#3B0E0E]">
-          DIRECT CONNECT
-        </div>
-
-        <!-- Main Headline (Word-for-Word as Video Frame_024) -->
-        <h2 class="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight leading-tight">
-          Let's Architect Something Extraordinary.
-        </h2>
-
-        <!-- Subtitle with Kishore's Real Availability -->
-        <p class="font-sans-cyber text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-          Available for full-stack software engineering roles, high-concurrency backend system design, and software architecture.
-        </p>
+    <div class="text-center space-y-2">
+      <div class="inline-block font-mono-cyber text-[10px] text-[#FF2A2A] font-bold tracking-widest uppercase px-2.5 py-1 bg-[#120404] border border-[#3B0E0E]">
+        DIRECT CONNECT
       </div>
-    </CadTarget>
+
+      <!-- Main Headline (Word-for-Word as Video Frame_024) -->
+      <h2 class="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight leading-tight">
+        Let's Architect Something Extraordinary.
+      </h2>
+
+      <!-- Subtitle with Kishore's Real Availability -->
+      <p class="font-sans-cyber text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
+        Available for full-stack software engineering roles, high-concurrency backend system design, and software architecture.
+      </p>
+    </div>
 
     <!-- Quick Email Dispatch Strip with Copy Button (Exact Layout as Video Frame_028) -->
-    <CadTarget id="contact-quick" label="360 × 38">
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-md mx-auto">
-        <div class="font-mono-cyber text-xs text-white px-4 py-2.5 bg-[#08090C] border border-[#1A1C23] w-full sm:w-auto flex-1 text-center sm:text-left select-all">
-          {email}
-        </div>
-
-        <button
-          type="button"
-          onclick={handleCopy}
-          class="cyber-badge-red px-4 py-2.5 font-mono-cyber text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto shrink-0 active:scale-95 transition-transform"
-        >
-          {#if copied}
-            <Check class="w-3.5 h-3.5" />
-            <span>COPIED</span>
-          {:else}
-            <Copy class="w-3.5 h-3.5" />
-            <span>Copy Email Address</span>
-          {/if}
-        </button>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-md mx-auto">
+      <div class="font-mono-cyber text-xs text-white px-4 py-2.5 bg-[#08090C] border border-[#1A1C23] w-full sm:w-auto flex-1 text-center sm:text-left select-all">
+        {email}
       </div>
-    </CadTarget>
+
+      <button
+        type="button"
+        onclick={handleCopy}
+        class="cyber-badge-red px-4 py-2.5 font-mono-cyber text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto shrink-0 active:scale-95 transition-transform"
+      >
+        {#if copied}
+          <Check class="w-3.5 h-3.5" />
+          <span>COPIED</span>
+        {:else}
+          <Copy class="w-3.5 h-3.5" />
+          <span>Copy Email Address</span>
+        {/if}
+      </button>
+    </div>
 
     <!-- FULL INTERACTIVE DISPATCH FORM (Preserving Kishore's form from before) -->
-    <CadTarget id="contact-form" label="440 × 320">
-      <div class="cyber-card p-6 sm:p-8 max-w-2xl mx-auto !border-[#1F222E]">
+    <div class="cyber-card p-6 sm:p-8 max-w-2xl mx-auto !border-[#1F222E]">
       <div class="border-b border-[#1A1C23] pb-3 mb-5 flex items-center justify-between">
         <span class="font-mono-cyber text-xs font-bold text-white uppercase tracking-wider">
           DISPATCH TRANSMISSION
@@ -203,7 +197,6 @@
         </form>
       {/if}
     </div>
-    </CadTarget>
 
     <!-- Location & Social Terminal Links -->
     <div class="pt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-mono-cyber">
