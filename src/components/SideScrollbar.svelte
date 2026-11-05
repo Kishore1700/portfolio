@@ -7,23 +7,18 @@
     User,
     Sparkles,
     FolderGit2,
-    Briefcase,
     GraduationCap,
-    Award,
     Mail
   } from "lucide-svelte";
   import { sound } from "../utils/sound.js";
 
-  // Section waypoints definition with authentic colors and icons
   const sections = [
-    { id: "home", name: "HOME", slot: 1, icon: Home, color: "#55FF55", label: "Spawn Point" },
-    { id: "about", name: "ABOUT", slot: 2, icon: User, color: "#55FFFF", label: "Developer Profile" },
-    { id: "skills", name: "SKILLS", slot: 3, icon: Sparkles, color: "#FFFF55", label: "Inventory Chest" },
-    { id: "projects", name: "PROJECTS", slot: 4, icon: FolderGit2, color: "#FF5555", label: "Redstone Forge" },
-    { id: "internship", name: "INTERNSHIP", slot: 5, icon: Briefcase, color: "#AA00AA", label: "Experience" },
-    { id: "education", name: "EDUCATION", slot: 6, icon: GraduationCap, color: "#55FFFF", label: "Academic Records" },
-    { id: "certifications", name: "CERTS", slot: 7, icon: Award, color: "#FFFF55", label: "Trophy Room" },
-    { id: "contact", name: "CONTACT", slot: 8, icon: Mail, color: "#55FF55", label: "Send Message" },
+    { id: "home", name: "HOME", slot: 1, icon: Home, color: "#FF2A2A", label: "Core Node" },
+    { id: "about", name: "ABOUT", slot: 2, icon: User, color: "#00E5FF", label: "Philosophy & Bio" },
+    { id: "projects", name: "FLAGSHIPS", slot: 3, icon: FolderGit2, color: "#FF2A2A", label: "Deployments" },
+    { id: "skills", name: "MATRIX", slot: 4, icon: Sparkles, color: "#00FF66", label: "Systems Matrix" },
+    { id: "experience", name: "TIMELINE", slot: 5, icon: GraduationCap, color: "#FFD600", label: "MCA & Credentials" },
+    { id: "contact", name: "CONNECT", slot: 6, icon: Mail, color: "#FF2A2A", label: "Dispatch Terminal" },
   ];
 
   let scrollPercent = $state(0);
@@ -31,10 +26,6 @@
   let hoveredSection = $state(null);
   let isDragging = $state(false);
   let trackRef = $state(null);
-  let showCoords = $state(false);
-
-  // Minecraft altitude computation: Y = 320 (sky/spawn) down to Y = -64 (bedrock)
-  let yLevel = $derived(Math.round(320 - (scrollPercent / 100) * 384));
 
   function updateScroll() {
     if (typeof window === "undefined") return;
@@ -44,8 +35,7 @@
     const percent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
     scrollPercent = percent;
 
-    // Detect active section
-    const scrollPos = scrollTop + 140;
+    const scrollPos = scrollTop + 160;
     let current = "home";
 
     for (const sec of sections) {
@@ -86,7 +76,6 @@
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
   }
 
-  // Interactive track click & drag handling
   function handleTrackPointerDown(e) {
     if (!trackRef) return;
     isDragging = true;
@@ -105,7 +94,7 @@
     try {
       trackRef.releasePointerCapture(e.pointerId);
     } catch {
-      // Ignored if pointer was already released
+      // Ignored
     }
   }
 
@@ -135,42 +124,25 @@
   });
 </script>
 
-<!-- FLOATING INTERACTIVE MINECRAFT SIDE SCROLLBAR -->
+<!-- CYBER-OPERATOR SIDE ELEVATOR SCROLLBAR -->
 <aside
-  class="fixed right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 z-[9990] hidden md:flex flex-col items-center select-none"
-  aria-label="Interactive Page Scrollbar and Waypoints"
+  class="fixed right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 z-[9980] hidden lg:flex flex-col items-center select-none"
+  aria-label="Navigation Elevator"
 >
-  <!-- HUD Outer Bezel -->
-  <div class="mc-container p-1 sm:p-1.5 bg-[#07080c]/90 backdrop-blur-md border-2 border-black flex flex-col items-center gap-1.5 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+  <div class="p-1 bg-[#06070a]/90 backdrop-blur-md border border-[#1b1c28] flex flex-col items-center gap-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
     
-    <!-- Top Stepper Button: Up to Spawn -->
+    <!-- Top Stepper -->
     <button
       type="button"
       onclick={scrollToTop}
-      class="w-7 h-7 mc-slot bg-[#12141c] hover:bg-[#1f2230] hover:border-[#55FF55] text-slate-400 hover:text-[#55FF55] flex items-center justify-center transition-all cursor-pointer group relative"
-      title="Scroll to Top [Spawn]"
+      class="w-6 h-6 bg-[#0c0e14] hover:bg-[#1a1c26] text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer group relative"
+      title="Scroll to Top"
       aria-label="Scroll to top"
     >
-      <ChevronUp class="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
-      
-      <!-- Hover Tooltip -->
-      <span class="absolute right-9 px-2 py-1 bg-[#0c0d12] border border-black font-pixel text-[9px] text-[#55FF55] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-[0_0_10px_rgba(0,0,0,0.8)]">
-        ▲ SPAWN POINT
-      </span>
+      <ChevronUp class="w-3.5 h-3.5" />
     </button>
 
-    <!-- Altitude / Depth Coordinate Pill (Toggleable or Hover) -->
-    <div
-      role="region"
-      class="px-1.5 py-0.5 bg-[#000000] border border-black/80 font-pixel text-[8px] text-[#FFFF55] tracking-tighter text-center cursor-default hover:text-[#55FF55] transition-colors"
-      title="Minecraft World Altitude Coordinate (Build limit 320 to Bedrock -64)"
-      onmouseenter={() => (showCoords = true)}
-      onmouseleave={() => (showCoords = false)}
-    >
-      Y:{yLevel}
-    </div>
-
-    <!-- Vertical Interactive Rail Track -->
+    <!-- Vertical Rail Track -->
     <div
       role="scrollbar"
       aria-controls="main-content"
@@ -183,20 +155,20 @@
       onpointermove={handleTrackPointerMove}
       onpointerup={handleTrackPointerUp}
       onpointercancel={handleTrackPointerUp}
-      class="w-5 h-56 sm:h-64 mc-slot bg-[#040507] relative cursor-pointer flex flex-col items-center justify-between py-1 group/track hover:border-[#55FF55]/60 transition-colors"
-      title="Click or drag to scroll page"
+      class="w-4 h-56 bg-[#040507] border border-[#14151c] relative cursor-pointer flex flex-col items-center justify-between py-1 group/track hover:border-[#FF2A2A]/60 transition-colors"
+      title="Drag to scroll page"
     >
-      <!-- Background Guide Line -->
-      <div class="absolute top-1 bottom-1 w-[2px] bg-[#14161f] pointer-events-none"></div>
+      <!-- Center Laser Line -->
+      <div class="absolute top-1 bottom-1 w-[1px] bg-[#1a1c28] pointer-events-none"></div>
 
-      <!-- Glowing Fill Progress Line (Redstone / Emerald Rail) -->
+      <!-- Glowing Red Fill -->
       <div
-        class="absolute top-1 w-[2px] bg-gradient-to-b from-[#55FFFF] via-[#55FF55] to-[#FFFF55] pointer-events-none transition-all duration-75 shadow-[0_0_8px_#55FF55]"
-        style="height: calc({scrollPercent}% - 8px);"
+        class="absolute top-1 w-[2px] bg-gradient-to-b from-[#00E5FF] to-[#FF2A2A] pointer-events-none transition-all duration-75 shadow-[0_0_8px_#FF2A2A]"
+        style="height: calc({scrollPercent}% - 6px);"
       ></div>
 
-      <!-- Section Waypoints Dots Along the Rail -->
-      {#each sections as sec, i}
+      <!-- Section Waypoint Dots -->
+      {#each sections as sec}
         {@const isActive = activeSection === sec.id}
         {@const isHovered = hoveredSection === sec.id}
         {@const SecIcon = sec.icon}
@@ -209,78 +181,47 @@
           }}
           onmouseenter={() => (hoveredSection = sec.id)}
           onmouseleave={() => (hoveredSection = null)}
-          class="relative z-10 w-3 h-3 flex items-center justify-center cursor-pointer p-0 bg-transparent border-none transition-transform hover:scale-125 focus:outline-none"
-          title={`[Slot ${sec.slot}] ${sec.name} - ${sec.label}`}
+          class="relative z-10 w-2.5 h-2.5 flex items-center justify-center cursor-pointer p-0 bg-transparent border-none transition-transform hover:scale-125 focus:outline-none"
+          title={`${sec.name} - ${sec.label}`}
           aria-label={`Navigate to ${sec.name}`}
         >
-          <!-- Pixel Waypoint Dot -->
           <div
-            class="w-2 h-2 border border-black transition-all duration-150 {isActive
-              ? 'scale-125 shadow-[0_0_8px_currentColor]'
-              : 'bg-[#181a24] hover:bg-slate-300'}"
-            style={isActive ? `background-color: ${sec.color}; color: ${sec.color}; border-color: #000;` : ""}
+            class="w-1.5 h-1.5 transition-all duration-150 {isActive
+              ? 'scale-150 shadow-[0_0_8px_currentColor]'
+              : 'bg-[#222533] hover:bg-slate-300'}"
+            style={isActive ? `background-color: ${sec.color}; color: ${sec.color};` : ""}
           ></div>
 
-          <!-- Waypoint Tooltip Flyout (Left) -->
           {#if isHovered}
             <div
-              class="absolute right-7 px-2.5 py-1.5 bg-[#0c0d12] border-2 border-black flex items-center gap-2 pointer-events-none whitespace-nowrap shadow-[0_0_12px_rgba(0,0,0,0.9)] animate-fade-in z-50"
+              class="absolute right-6 px-2 py-1 bg-[#090b10] border border-[#232536] flex items-center gap-1.5 pointer-events-none whitespace-nowrap shadow-[0_0_12px_rgba(0,0,0,0.9)] z-50 text-[10px] font-mono text-white"
             >
-              <div class="w-5 h-5 mc-slot bg-[#040507] flex items-center justify-center shrink-0">
-                <SecIcon class="w-3 h-3" style="color: {sec.color};" />
-              </div>
-              <div class="text-left">
-                <div class="font-pixel text-[9px] text-[#FFFF55] flex items-center gap-1.5">
-                  <span class="text-[8px] text-slate-400 font-mono">[{sec.slot}]</span>
-                  <span>{sec.name}</span>
-                </div>
-                <div class="font-silkscreen text-[8px] text-slate-300">
-                  {sec.label}
-                </div>
-              </div>
+              <SecIcon class="w-3 h-3 text-cyan-400" />
+              <span>{sec.name}</span>
             </div>
           {/if}
         </button>
       {/each}
 
-      <!-- Interactive Voxel Thumb (Slider Carriage) -->
+      <!-- Slider Thumb Carriage -->
       <div
-        class="absolute left-1/2 -translate-x-1/2 w-4 h-3.5 mc-slot bg-[#222530] border-2 border-black flex items-center justify-center transition-all duration-75 pointer-events-none {isDragging ? 'border-[#FFFF55] bg-[#3a3e52] scale-110 shadow-[0_0_10px_#FFFF55]' : 'group-hover/track:border-[#55FF55] group-hover/track:shadow-[0_0_8px_#55FF55]'}"
-        style="top: calc({scrollPercent}% * (100% - 14px) / 100);"
-      >
-        <!-- Grip lines on thumb -->
-        <div class="w-2 flex flex-col gap-[2px]">
-          <div class="h-[1px] bg-[#55FF55]"></div>
-          <div class="h-[1px] bg-slate-400"></div>
-        </div>
-
-        <!-- Coordinates Floating Tag When Dragging or Hovered -->
-        {#if isDragging || showCoords}
-          <div class="absolute right-6 px-1.5 py-0.5 bg-[#000000] border border-black font-pixel text-[8px] text-[#55FF55] whitespace-nowrap">
-            {Math.round(scrollPercent)}% &bull; Y:{yLevel}
-          </div>
-        {/if}
-      </div>
+        class="absolute left-1/2 -translate-x-1/2 w-3.5 h-2.5 bg-[#FF2A2A] pointer-events-none shadow-[0_0_8px_#FF2A2A]"
+        style="top: calc({scrollPercent}% * (100% - 10px) / 100);"
+      ></div>
     </div>
 
-    <!-- Bottom Stepper Button: Down to Contact / Bedrock -->
+    <!-- Bottom Stepper -->
     <button
       type="button"
       onclick={scrollToBottom}
-      class="w-7 h-7 mc-slot bg-[#12141c] hover:bg-[#1f2230] hover:border-[#55FF55] text-slate-400 hover:text-[#55FF55] flex items-center justify-center transition-all cursor-pointer group relative"
-      title="Scroll to Bottom [Contact / Bedrock]"
+      class="w-6 h-6 bg-[#0c0e14] hover:bg-[#1a1c26] text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer group relative"
+      title="Scroll to Bottom"
       aria-label="Scroll to bottom"
     >
-      <ChevronDown class="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
-      
-      <!-- Hover Tooltip -->
-      <span class="absolute right-9 px-2 py-1 bg-[#0c0d12] border border-black font-pixel text-[9px] text-[#55FFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-[0_0_10px_rgba(0,0,0,0.8)]">
-        ▼ BEDROCK / CONTACT
-      </span>
+      <ChevronDown class="w-3.5 h-3.5" />
     </button>
 
-    <!-- Percent Gauge -->
-    <div class="text-[8px] font-pixel text-slate-400 text-center tracking-tighter">
+    <div class="text-[8px] font-mono text-slate-500 text-center">
       {Math.round(scrollPercent)}%
     </div>
 
