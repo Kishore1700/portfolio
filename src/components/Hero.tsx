@@ -10,11 +10,13 @@ export function Hero() {
     <section id="home" className="relative min-h-screen flex flex-col justify-center pt-28 pb-16 px-4 sm:px-6 lg:px-8 select-none">
       
       {/* Top Backdrop: Full-Width Giant Outlined Text PORTFOLIO built by cursor movement */}
-      <div className="w-full text-center pb-2 overflow-hidden select-none">
-        <h1 className="text-stroke-crimson font-display font-black text-[13vw] leading-none tracking-tight block uppercase select-none">
-          <CursorTypewriter id="hero-backdrop" text="PORTFOLIO" duration={700} />
-        </h1>
-      </div>
+      <BuilderTarget id="hero-backdrop" label="BACKDROP_BANNER">
+        <div className="w-full text-center pb-2 overflow-hidden select-none">
+          <h1 className="text-stroke-crimson font-display font-black text-[13vw] leading-none tracking-tight block uppercase select-none">
+            <CursorTypewriter id="hero-backdrop-text" text="PORTFOLIO" duration={700} />
+          </h1>
+        </div>
+      </BuilderTarget>
 
       {/* 3-Column Grid below/overlapping */}
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-4">
@@ -28,37 +30,41 @@ export function Hero() {
             </div>
 
             {/* Massive White Name inside Solid #DC2626 Rectangular Block */}
-            <div className="relative inline-block">
-              <h2 className="bg-[#DC2626] text-white font-display font-black text-4xl sm:text-5xl md:text-6xl px-4 py-1 tracking-tight uppercase shadow-[0_0_30px_rgba(220,38,38,0.35)]">
-                <CursorTypewriter id="hero-name" text="KISHORE." duration={500} />
-              </h2>
-              {/* 4 Corner White Resize Squares */}
-              <div className="absolute -top-1 -left-1 w-1.5 h-1.5 bg-white border border-black"></div>
-              <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white border border-black"></div>
-              <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-white border border-black"></div>
-              <div className="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-white border border-black"></div>
-            </div>
+            <BuilderTarget id="hero-name" label="IDENTITY_BLOCK">
+              <div className="relative inline-block">
+                <h2 className="bg-[#DC2626] text-white font-display font-black text-4xl sm:text-5xl md:text-6xl px-4 py-1 tracking-tight uppercase shadow-[0_0_30px_rgba(220,38,38,0.35)]">
+                  <CursorTypewriter id="hero-name-text" text="KISHORE." duration={500} />
+                </h2>
+                {/* 4 Corner White Resize Squares */}
+                <div className="absolute -top-1 -left-1 w-1.5 h-1.5 bg-white border border-black"></div>
+                <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white border border-black"></div>
+                <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-white border border-black"></div>
+                <div className="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-white border border-black"></div>
+              </div>
+            </BuilderTarget>
           </div>
 
           {/* Monospace Role Badge */}
-          <div>
+          <BuilderTarget id="hero-role" label="SYS_ROLE_BADGE">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0C0C0C] border border-[#1E1E1E]">
               <span className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_8px_#DC2626]"></span>
               <span className="font-mono text-[10px] text-neutral-300 font-bold uppercase tracking-wider">
-                <CursorTypewriter id="hero-role" text="• FULL-STACK ARCHITECT & MCA SCHOLAR" duration={600} />
+                • FULL-STACK ARCHITECT &amp; MCA SCHOLAR
               </span>
             </div>
-          </div>
+          </BuilderTarget>
 
           {/* 3-Line Summary typed out live by cursor */}
-          <div className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-md font-sans min-h-[4rem]">
-            <CursorTypewriter
-              id="hero-summary"
-              text="Master of Computer Applications candidate at Sona College of Technology. Engineering high-concurrency backend services, asynchronous pipelines, and reactive client interfaces from first principles — zero bloat, total performance."
-              duration={900}
-              highlightWords={["Sona College of Technology", "first principles", "total performance"]}
-            />
-          </div>
+          <BuilderTarget id="hero-summary" label="BIO_SUMMARY">
+            <div className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-md font-sans min-h-[4rem]">
+              <CursorTypewriter
+                id="hero-summary-text"
+                text="Master of Computer Applications candidate at Sona College of Technology. Engineering high-concurrency backend services, asynchronous pipelines, and reactive client interfaces from first principles — zero bloat, total performance."
+                duration={900}
+                highlightWords={["Sona College of Technology", "first principles", "total performance"]}
+              />
+            </div>
+          </BuilderTarget>
 
           {/* 2 Buttons */}
           <BuilderTarget id="hero-actions" label="ACTION_CTAS">
@@ -143,7 +149,7 @@ export function Hero() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <span className="text-[#DC2626]">01. &#9654;</span>
-                    <CursorTypewriter id="runtime-01" text="Autonomous Core" duration={450} />
+                    <span>Autonomous Core</span>
                   </span>
                   <span className="text-[8px] text-[#10B981] bg-black px-1.5 py-0.5 border border-[#1E1E1E]">PRODUCTION</span>
                 </div>
@@ -157,7 +163,7 @@ export function Hero() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <span className="text-[#DC2626]">02. &#9654;</span>
-                    <CursorTypewriter id="runtime-02" text="Reactive Web Engine" duration={450} />
+                    <span>Reactive Web Engine</span>
                   </span>
                   <span className="text-[8px] text-[#3B82F6] bg-black px-1.5 py-0.5 border border-[#1E1E1E]">PRODUCTION</span>
                 </div>
@@ -171,7 +177,7 @@ export function Hero() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <span className="text-[#DC2626]">03. &#9654;</span>
-                    <CursorTypewriter id="runtime-03" text="AI & Computer Vision" duration={450} />
+                    <span>AI &amp; Computer Vision</span>
                   </span>
                   <span className="text-[8px] text-[#F59E0B] bg-black px-1.5 py-0.5 border border-[#1E1E1E]">EXECUTION</span>
                 </div>

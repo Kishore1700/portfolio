@@ -53,8 +53,8 @@ export function FloatingHud() {
           <button
             type="button"
             onClick={cycleSpeed}
-            className="px-2 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-white hover:border-[#3B82F6] transition-colors flex items-center gap-1"
-            title="Toggle build speed multiplier"
+            className="px-2 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-white hover:border-[#3B82F6] transition-colors flex items-center gap-1 cursor-pointer"
+            title="Toggle build speed multiplier (1x, 1.5x, 2x)"
           >
             <Gauge className="w-3 h-3 text-[#3B82F6]" />
             <span>{speedMultiplier}x</span>
@@ -65,7 +65,7 @@ export function FloatingHud() {
             <button
               type="button"
               onClick={skipAll}
-              className="px-2 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-[#DC2626] transition-colors flex items-center gap-1"
+              className="px-2 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-[#DC2626] transition-colors flex items-center gap-1 cursor-pointer"
               title="Instantly finish all constructions"
             >
               <FastForward className="w-3 h-3" />
@@ -77,7 +77,7 @@ export function FloatingHud() {
           <button
             type="button"
             onClick={replay}
-            className="px-2.5 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-[#3B82F6] transition-colors flex items-center gap-1"
+            className="px-2.5 py-0.5 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-[#3B82F6] hover:border-[#3B82F6] transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
             title="Reset and replay construction state machine"
           >
             <RotateCcw className="w-3 h-3" />
@@ -89,4 +89,3 @@ export function FloatingHud() {
     </div>
   );
 }
-

@@ -14,23 +14,19 @@ export interface AgentCursor {
   targetY: number;
   isAssigned: boolean;
   assignedTargetId?: string;
-}
-
-interface QueuedItem {
-  id: string;
-  rect: DOMRect;
+  role?: "lead" | "wing1" | "wing2";
 }
 
 interface SwarmBuilderContextType {
   states: Record<string, BuildState>;
+  typingProgress: Record<string, number>; // 0 to 1
   speedMultiplier: number;
   totalElements: number;
   builtElements: number;
   isAllBuilt: boolean;
   agents: AgentCursor[];
-  setAgents: React.Dispatch<React.SetStateAction<AgentCursor[]>>;
   registerElement: (id: string) => void;
-  requestBuild: (id: string, rect?: DOMRect) => void;
+  requestBuild: (id: string) => void;
   setSpeedMultiplier: (speed: number) => void;
   cycleSpeed: () => void;
   skipAll: () => void;
@@ -38,9 +34,10 @@ interface SwarmBuilderContextType {
   isElementBuilt: (id: string) => boolean;
   isElementBuilding: (id: string) => boolean;
   isElementUnbuilt: (id: string) => boolean;
+  getTypeProgress: (id: string) => number;
 }
 
-const INITIAL_AGENTS: { id: string; name: string; color: string }[] = [
+const INITIAL_AGENTS_CONFIG: { id: string; name: string; color: string }[] = [
   { id: "agent_01", name: "agent_01", color: "#DC2626" },
   { id: "agent_02", name: "agent_02", color: "#3B82F6" },
   { id: "agent_03", name: "agent_03", color: "#10B981" },
@@ -59,21 +56,41 @@ const INITIAL_AGENTS: { id: string; name: string; color: string }[] = [
   { id: "agent_16", name: "agent_16", color: "#F43F5E" },
 ];
 
+// Ordered Hero elements to build sequentially on startup and replay
+const HERO_SEQUENCE = [
+  "hero-backdrop",
+  "hero-greet",
+  "hero-name",
+  "hero-role",
+  "hero-summary",
+  "hero-actions",
+  "hero-portrait",
+  "hero-runtimes",
+  "hero-metrics",
+];
+
 const SwarmBuilderContext = createContext<SwarmBuilderContextType | undefined>(undefined);
 
 export function SwarmBuilderProvider({ children }: { children: React.ReactNode }) {
   const [states, setStates] = useState<Record<string, BuildState>>({});
+  const [typingProgress, setTypingProgress] = useState<Record<string, number>>({});
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
-  const queueRef = useRef<QueuedItem[]>([]);
-  const isProcessingQueue = useRef<boolean>(false);
 
+  // References for managing queues, concurrency, and timers
+  const buildQueue = useRef<string[]>([]);
+  const isHeroSequenceActive = useRef<boolean>(false);
+  const activeTimers = useRef<NodeJS.Timeout[]>([]);
+  const activeIntervals = useRef<NodeJS.Timeout[]>([]);
+  const activeBuilds = useRef<Set<string>>(new Set());
+
+  // 16 Autonomous SVG Cursors
   const [agents, setAgents] = useState<AgentCursor[]>(() =>
-    INITIAL_AGENTS.map((a, i) => ({
+    INITIAL_AGENTS_CONFIG.map((a, i) => ({
       ...a,
-      x: 100 + (i * 60) % 900,
-      y: 100 + Math.floor(i / 4) * 90,
-      targetX: 100 + (i * 60) % 900,
-      targetY: 100 + Math.floor(i / 4) * 90,
+      x: 120 + (i * 55) % 900,
+      y: 90 + Math.floor(i / 4) * 80,
+      targetX: 120 + (i * 55) % 900,
+      targetY: 90 + Math.floor(i / 4) * 80,
       isAssigned: false,
     }))
   );
@@ -86,90 +103,266 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
   );
   const isAllBuilt = totalElements > 0 && builtElements === totalElements;
 
+  // Clear all running timeouts and intervals
+  const clearAllTimers = useCallback(() => {
+    activeTimers.current.forEach(clearTimeout);
+    activeTimers.current = [];
+    activeIntervals.current.forEach(clearInterval);
+    activeIntervals.current = [];
+  }, []);
+
   const registerElement = useCallback((id: string) => {
     setStates((prev) => {
-      if (prev[id]) return prev;
+      if (prev[id] !== undefined) return prev;
       return { ...prev, [id]: "UNBUILT" };
+    });
+    setTypingProgress((prev) => {
+      if (prev[id] !== undefined) return prev;
+      return { ...prev, [id]: 0 };
     });
   }, []);
 
-  // Process queue sequentially with staggered concurrency (max 2 items building simultaneously)
-  const processQueue = useCallback(() => {
-    if (isProcessingQueue.current) return;
-    if (queueRef.current.length === 0) return;
+  // Multi-Agent Element Construction Routine
+  const executeElementBuild = useCallback(
+    (id: string, onDone: () => void) => {
+      if (typeof document === "undefined") {
+        onDone();
+        return;
+      }
 
-    isProcessingQueue.current = true;
-    const item = queueRef.current.shift();
-    if (!item) {
-      isProcessingQueue.current = false;
+      const el = document.getElementById(id);
+      if (!el) {
+        onDone();
+        return;
+      }
+
+      const rect = el.getBoundingClientRect();
+      const startX = Math.max(10, rect.left + 8);
+      const startY = Math.max(10, rect.top + rect.height * 0.5);
+      const endX = Math.max(startX + 25, rect.left + rect.width - 8);
+      const sweepDistance = endX - startX;
+
+      // 1. Assign a team of 2-3 agents for this element
+      let leadAgentId = "";
+      let wingAgent1Id = "";
+      let wingAgent2Id = "";
+
+      setAgents((prev) => {
+        const available = prev.filter((a) => !a.isAssigned);
+        const team = available.slice(0, 3);
+        
+        if (team.length === 0) {
+          // Fallback to any agent
+          leadAgentId = prev[0]?.id || "agent_01";
+        } else {
+          leadAgentId = team[0].id;
+          if (team[1]) wingAgent1Id = team[1].id;
+          if (team[2]) wingAgent2Id = team[2].id;
+        }
+
+        // PHASE 1 (FLIGHT): Cursors fly to the start positions.
+        // Element remains UNBUILT with 0 characters shown!
+        return prev.map((agent) => {
+          if (agent.id === leadAgentId) {
+            return {
+              ...agent,
+              targetX: startX,
+              targetY: startY,
+              isAssigned: true,
+              assignedTargetId: id,
+              role: "lead",
+            };
+          }
+          if (wingAgent1Id && agent.id === wingAgent1Id) {
+            return {
+              ...agent,
+              targetX: Math.max(10, rect.right - 10),
+              targetY: Math.max(10, rect.top + 10),
+              isAssigned: true,
+              assignedTargetId: id,
+              role: "wing1",
+            };
+          }
+          if (wingAgent2Id && agent.id === wingAgent2Id) {
+            return {
+              ...agent,
+              targetX: Math.max(10, rect.right - 10),
+              targetY: Math.max(10, rect.bottom - 10),
+              isAssigned: true,
+              assignedTargetId: id,
+              role: "wing2",
+            };
+          }
+          return agent;
+        });
+      });
+
+      // Flight time allowance for spring physics to travel to element
+      const flightDuration = Math.round(300 / speedMultiplier);
+
+      const flightTimer = setTimeout(() => {
+        // PHASE 2 (CONSTRUCTION & SWEEP): Cursors have arrived!
+        // Now turn on Figma Blue wireframe (#3B82F6) and sweep cursor across to type/reveal!
+        setStates((prev) => ({ ...prev, [id]: "BUILDING" }));
+
+        // Sweep duration based on element width
+        const baseSweepDuration = Math.min(850, Math.max(340, sweepDistance * 1.1));
+        const sweepDuration = Math.round(baseSweepDuration / speedMultiplier);
+        const startTime = Date.now();
+
+        const sweepInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(1, elapsed / sweepDuration);
+
+          // Update typing / reveal progress for this element and any related sub-id
+          setTypingProgress((prev) => ({
+            ...prev,
+            [id]: progress,
+            [`${id}-text`]: progress,
+          }));
+
+          // Lead cursor physically sweeps from startX to endX, leading the revealed letters!
+          const currentCursorX = startX + progress * sweepDistance;
+
+          setAgents((prev) =>
+            prev.map((agent) => {
+              if (agent.id === leadAgentId) {
+                return {
+                  ...agent,
+                  targetX: currentCursorX,
+                  targetY: startY,
+                };
+              }
+              if (wingAgent1Id && agent.id === wingAgent1Id) {
+                // Subtle breathing movement on corner resize handle
+                return {
+                  ...agent,
+                  targetX: Math.max(10, rect.right - 10 + Math.sin(elapsed * 0.01) * 3),
+                  targetY: Math.max(10, rect.top + 10),
+                };
+              }
+              return agent;
+            })
+          );
+
+          // PHASE 3 (BUILT): Sweep complete! Element snaps into place!
+          if (progress >= 1) {
+            clearInterval(sweepInterval);
+            activeIntervals.current = activeIntervals.current.filter((i) => i !== sweepInterval);
+
+            setStates((prev) => ({
+              ...prev,
+              [id]: "BUILT",
+              [`${id}-text`]: "BUILT",
+            }));
+            setTypingProgress((prev) => ({
+              ...prev,
+              [id]: 1,
+              [`${id}-text`]: 1,
+            }));
+
+            // Release the assigned agents
+            setAgents((prev) =>
+              prev.map((agent) =>
+                agent.assignedTargetId === id
+                  ? { ...agent, isAssigned: false, assignedTargetId: undefined, role: undefined }
+                  : agent
+              )
+            );
+
+            // Brief pacing before next element
+            const pauseTimer = setTimeout(() => {
+              onDone();
+            }, Math.round(50 / speedMultiplier));
+            activeTimers.current.push(pauseTimer);
+          }
+        }, 16);
+
+        activeIntervals.current.push(sweepInterval);
+      }, flightDuration);
+
+      activeTimers.current.push(flightTimer);
+    },
+    [speedMultiplier]
+  );
+
+  // Sequential queue dispatcher
+  const processNextInQueue = useCallback(() => {
+    if (buildQueue.current.length === 0) {
+      isHeroSequenceActive.current = false;
       return;
     }
 
-    const { id, rect } = item;
+    const nextId = buildQueue.current.shift()!;
 
-    // Set element state to BUILDING
-    setStates((prev) => ({ ...prev, [id]: "BUILDING" }));
+    setStates((currentStates) => {
+      if (currentStates[nextId] === "BUILT") {
+        setTimeout(processNextInQueue, 10);
+        return currentStates;
+      }
 
-    // Dispatch 2-4 nearby agent cursors to bounding box
-    setAgents((prev) => {
-      // Find 3 available agents
-      const unassignedIndices: number[] = [];
-      prev.forEach((a, idx) => {
-        if (!a.isAssigned) unassignedIndices.push(idx);
+      activeBuilds.current.add(nextId);
+
+      executeElementBuild(nextId, () => {
+        activeBuilds.current.delete(nextId);
+        processNextInQueue();
       });
-      const chosenIndices = (unassignedIndices.length >= 3 ? unassignedIndices : prev.map((_, i) => i)).slice(0, 3);
 
-      return prev.map((agent, idx) => {
-        if (chosenIndices.includes(idx)) {
-          const offsetX = (Math.random() - 0.5) * Math.min(rect.width * 0.8, 300);
-          const offsetY = (Math.random() - 0.5) * Math.min(rect.height * 0.8, 120);
-          return {
-            ...agent,
-            targetX: Math.max(20, rect.left + rect.width / 2 + offsetX),
-            targetY: Math.max(20, rect.top + rect.height / 2 + offsetY),
-            isAssigned: true,
-            assignedTargetId: id,
-          };
-        }
-        return agent;
-      });
+      return currentStates;
     });
+  }, [executeElementBuild]);
 
-    // Building duration (650ms adjusted by speedMultiplier)
-    const baseDuration = 650;
-    const duration = baseDuration / speedMultiplier;
+  const enqueue = useCallback(
+    (id: string) => {
+      if (!buildQueue.current.includes(id)) {
+        buildQueue.current.push(id);
+      }
+      if (activeBuilds.current.size === 0) {
+        processNextInQueue();
+      }
+    },
+    [processNextInQueue]
+  );
 
-    setTimeout(() => {
-      // Mark BUILT
-      setStates((prev) => ({ ...prev, [id]: "BUILT" }));
-
-      // Release assigned agents
-      setAgents((prev) =>
-        prev.map((a) => (a.assignedTargetId === id ? { ...a, isAssigned: false, assignedTargetId: undefined } : a))
-      );
-
-      isProcessingQueue.current = false;
-      // Stagger to next queued item
-      setTimeout(() => {
-        processQueue();
-      }, 50 / speedMultiplier);
-    }, duration);
-  }, [speedMultiplier]);
-
+  // Request build triggered by IntersectionObserver or auto-sequence
   const requestBuild = useCallback(
-    (id: string, rect?: DOMRect) => {
+    (id: string) => {
       setStates((prev) => {
         if (prev[id] === "BUILDING" || prev[id] === "BUILT" || prev[id] === "QUEUED") return prev;
         return { ...prev, [id]: "QUEUED" };
       });
-
-      if (rect) {
-        queueRef.current.push({ id, rect });
-        processQueue();
-      }
+      enqueue(id);
     },
-    [processQueue]
+    [enqueue]
   );
+
+  // Master Hero Sequence
+  const startHeroSequence = useCallback(() => {
+    clearAllTimers();
+    buildQueue.current = [];
+    activeBuilds.current.clear();
+    isHeroSequenceActive.current = true;
+
+    // Enqueue Hero elements in strict deliberate sequence
+    HERO_SEQUENCE.forEach((id) => {
+      if (!buildQueue.current.includes(id)) {
+        buildQueue.current.push(id);
+      }
+    });
+
+    const initTimer = setTimeout(() => {
+      processNextInQueue();
+    }, 250);
+    activeTimers.current.push(initTimer);
+  }, [clearAllTimers, processNextInQueue]);
+
+  // Initial auto-start on mount
+  useEffect(() => {
+    const startupTimer = setTimeout(() => {
+      startHeroSequence();
+    }, 350);
+    return () => clearTimeout(startupTimer);
+  }, [startHeroSequence]);
 
   const cycleSpeed = useCallback(() => {
     setSpeedMultiplier((curr) => {
@@ -179,9 +372,13 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
     });
   }, []);
 
+  // SKIP ALL: Instantly completes all elements on the entire page
   const skipAll = useCallback(() => {
-    queueRef.current = [];
-    isProcessingQueue.current = false;
+    clearAllTimers();
+    buildQueue.current = [];
+    activeBuilds.current.clear();
+    isHeroSequenceActive.current = false;
+
     setStates((prev) => {
       const next: Record<string, BuildState> = {};
       Object.keys(prev).forEach((k) => {
@@ -189,40 +386,86 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
       });
       return next;
     });
-    setAgents((prev) => prev.map((a) => ({ ...a, isAssigned: false, assignedTargetId: undefined })));
-  }, []);
 
-  const replay = useCallback(() => {
-    queueRef.current = [];
-    isProcessingQueue.current = false;
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-    setStates((prev) => {
-      const next: Record<string, BuildState> = {};
+    setTypingProgress((prev) => {
+      const next: Record<string, number> = {};
       Object.keys(prev).forEach((k) => {
-        next[k] = "UNBUILT";
+        next[k] = 1;
       });
       return next;
     });
+
+    setAgents((prev) =>
+      prev.map((a) => ({
+        ...a,
+        isAssigned: false,
+        assignedTargetId: undefined,
+        role: undefined,
+      }))
+    );
+  }, [clearAllTimers]);
+
+  // REPLAY: Resets everything to 0, scrolls instantly to top, and restarts master cursor build!
+  const replay = useCallback(() => {
+    // 1. Purge all running timers and intervals immediately
+    clearAllTimers();
+    buildQueue.current = [];
+    activeBuilds.current.clear();
+    isHeroSequenceActive.current = false;
+
+    // 2. Instant scroll to the absolute top of the page
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    }
+
+    // 3. Reset ALL registered element states to UNBUILT
+    setStates((prev) => {
+      const resetStates: Record<string, BuildState> = {};
+      Object.keys(prev).forEach((k) => {
+        resetStates[k] = "UNBUILT";
+      });
+      return resetStates;
+    });
+
+    // 4. Reset ALL typing progress to 0
+    setTypingProgress((prev) => {
+      const resetProgress: Record<string, number> = {};
+      Object.keys(prev).forEach((k) => {
+        resetProgress[k] = 0;
+      });
+      return resetProgress;
+    });
+
+    // 5. Reset all 16 agents to initial spread positions
     setAgents((prev) =>
       prev.map((a, i) => ({
         ...a,
-        x: 100 + (i * 60) % 900,
-        y: 100 + Math.floor(i / 4) * 90,
-        targetX: 100 + (i * 60) % 900,
-        targetY: 100 + Math.floor(i / 4) * 90,
+        x: 120 + (i * 55) % 900,
+        y: 90 + Math.floor(i / 4) * 80,
+        targetX: 120 + (i * 55) % 900,
+        targetY: 90 + Math.floor(i / 4) * 80,
         isAssigned: false,
         assignedTargetId: undefined,
+        role: undefined,
       }))
     );
-  }, []);
+
+    // 6. Restart master sequence from hero-backdrop after clean DOM reset
+    const replayTimer = setTimeout(() => {
+      startHeroSequence();
+    }, 150);
+    activeTimers.current.push(replayTimer);
+  }, [clearAllTimers, startHeroSequence]);
 
   const isElementBuilt = useCallback((id: string) => states[id] === "BUILT", [states]);
   const isElementBuilding = useCallback((id: string) => states[id] === "BUILDING", [states]);
-  const isElementUnbuilt = useCallback((id: string) => states[id] === "UNBUILT" || states[id] === "QUEUED", [states]);
+  const isElementUnbuilt = useCallback(
+    (id: string) => states[id] === "UNBUILT" || states[id] === "QUEUED" || states[id] === undefined,
+    [states]
+  );
+  const getTypeProgress = useCallback((id: string) => typingProgress[id] || 0, [typingProgress]);
 
-  // Idle roaming & footer circle orbit
+  // Idle Roaming and Footer Orbit
   useEffect(() => {
     let animId: number;
     let angle = 0;
@@ -235,12 +478,12 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
       setAgents((prev) =>
         prev.map((agent, i) => {
           if (agent.isAssigned) {
-            // Target is assigned, position is driven by Framer Motion or spring physics
+            // Position is actively driven by flight or sweep
             return agent;
           }
 
           if (isAllBuilt) {
-            // Idle Orbit on right side of footer
+            // Idle Orbit on right side of footer / bottom
             const centerX = w - 180;
             const centerY = h * 0.55;
             const radius = 55 + (i % 6) * 16;
@@ -252,9 +495,9 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
             };
           }
 
-          // Random roaming
+          // Gentle ambient roving when unassigned
           const dist = Math.hypot(agent.targetX - agent.x, agent.targetY - agent.y);
-          if (dist < 30 || Math.random() < 0.007) {
+          if (dist < 30 || Math.random() < 0.008) {
             return {
               ...agent,
               targetX: Math.max(40, Math.min(w - 70, Math.random() * w)),
@@ -277,12 +520,12 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
     <SwarmBuilderContext.Provider
       value={{
         states,
+        typingProgress,
         speedMultiplier,
         totalElements,
         builtElements,
         isAllBuilt,
         agents,
-        setAgents,
         registerElement,
         requestBuild,
         setSpeedMultiplier,
@@ -292,6 +535,7 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         isElementBuilt,
         isElementBuilding,
         isElementUnbuilt,
+        getTypeProgress,
       }}
     >
       {children}

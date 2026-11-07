@@ -30,10 +30,10 @@ export function BuilderTarget({ id, label = "CAD // LAYER", className = "", chil
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && isElementUnbuilt(id)) {
             const rect = entry.target.getBoundingClientRect();
             setDimensions({ width: Math.round(rect.width), height: Math.round(rect.height) });
-            requestBuild(id, rect);
+            requestBuild(id);
           }
         });
       },
@@ -42,21 +42,11 @@ export function BuilderTarget({ id, label = "CAD // LAYER", className = "", chil
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [id, requestBuild]);
+  }, [id, requestBuild, isElementUnbuilt]);
 
   return (
     <div ref={ref} id={id} className={`relative transition-all duration-300 ${className}`}>
       
-      {/* UNBUILT STATE: Lightweight wireframe blueprint placeholder */}
-      {unbuilt && (
-        <div className="absolute inset-0 border border-[#3B82F6]/25 bg-[#3B82F6]/[0.02] z-20 pointer-events-none">
-          <div className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] bg-[#3B82F6]/40 border border-black"></div>
-          <div className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] bg-[#3B82F6]/40 border border-black"></div>
-          <div className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] bg-[#3B82F6]/40 border border-black"></div>
-          <div className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] bg-[#3B82F6]/40 border border-black"></div>
-        </div>
-      )}
-
       {/* BUILDING PHASE: Figma Blue (#3B82F6) wireframe border, 4 corner 6x6px resize squares, streaming typing effect, and thin progress bar */}
       {building && (
         <div className="absolute -inset-1 border border-[#3B82F6] bg-[#3B82F6]/[0.08] z-30 pointer-events-none shadow-[0_0_20px_rgba(59,130,246,0.35)]">
@@ -85,13 +75,13 @@ export function BuilderTarget({ id, label = "CAD // LAYER", className = "", chil
         </div>
       )}
 
-      {/* BUILT PHASE: Snaps into final styled component */}
+      {/* BUILT PHASE: Snaps into final styled component; UNBUILT: completely hidden placeholder */}
       <div
         className={`transition-all duration-300 ${
           built
             ? "opacity-100 scale-100"
             : building
-            ? "opacity-80 blur-[0.5px]"
+            ? "opacity-90 blur-[0.3px]"
             : "opacity-0 scale-[0.99] pointer-events-none"
         }`}
       >

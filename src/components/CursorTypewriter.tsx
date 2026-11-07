@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSwarmBuilder } from "@/context/SwarmBuilderContext";
 
 interface CursorTypewriterProps {
@@ -19,25 +19,36 @@ export function CursorTypewriter({
   text,
   as: Component = "span",
   className = "",
-  cursorLabel,
-  duration = 750,
   highlightWords = [],
   highlightColor = "#DC2626",
 }: CursorTypewriterProps) {
-  const { registerElement, requestBuild, isElementBuilt, isElementBuilding, isElementUnbuilt, speedMultiplier, setAgents } =
-    useSwarmBuilder();
+  const {
+    registerElement,
+    requestBuild,
+    isElementBuilt,
+    isElementBuilding,
+    isElementUnbuilt,
+    getTypeProgress,
+  } = useSwarmBuilder();
+
   const ref = useRef<HTMLElement>(null);
-  const [displayedLength, setDisplayedLength] = useState<number>(0);
 
-  const built = isElementBuilt(id);
-  const building = isElementBuilding(id);
-  const unbuilt = isElementUnbuilt(id);
-
+  // Register element on mount
   useEffect(() => {
     registerElement(id);
   }, [id, registerElement]);
 
-  // Viewport intersection observer to trigger build
+  // Support parent ID inheritance if this is a sub-element (e.g. "hero-name-text" -> "hero-name")
+  const baseId = id.endsWith("-text") ? id.replace("-text", "") : id;
+
+  const built = isElementBuilt(id) || isElementBuilt(baseId);
+  const building = isElementBuilding(id) || isElementBuilding(baseId);
+  const unbuilt = !built && !building;
+
+  // Real-time progress strictly tied to cursor physical movement (0 to 1)
+  const progress = Math.max(0, Math.min(1, getTypeProgress(id) || getTypeProgress(baseId) || 0));
+
+  // Viewport intersection observer to request build when scrolled into view
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -45,9 +56,8 @@ export function CursorTypewriter({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const rect = entry.target.getBoundingClientRect();
-            requestBuild(id, rect);
+          if (entry.isIntersecting && isElementUnbuilt(id) && isElementUnbuilt(baseId)) {
+            requestBuild(baseId);
           }
         });
       },
@@ -56,59 +66,11 @@ export function CursorTypewriter({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [id, requestBuild]);
+  }, [id, baseId, requestBuild, isElementUnbuilt]);
 
-  // Live cursor-driven letter reveal effect
-  useEffect(() => {
-    if (!building) {
-      if (built) {
-        setDisplayedLength(text.length);
-      } else if (unbuilt) {
-        setDisplayedLength(0);
-      }
-      return;
-    }
-
-    const totalChars = text.length;
-    if (totalChars === 0) return;
-
-    const adjustedDuration = duration / speedMultiplier;
-    const intervalMs = Math.max(16, Math.floor(adjustedDuration / totalChars));
-    let charIndex = 0;
-
-    const timer = setInterval(() => {
-      charIndex++;
-      setDisplayedLength(charIndex);
-
-      // Dynamically move the assigned agent cursor to the exact letter position on screen
-      if (ref.current) {
-        const rect = ref.current.getBoundingClientRect();
-        const progress = Math.min(1, charIndex / totalChars);
-        const currentCursorX = rect.left + progress * rect.width;
-        const currentCursorY = rect.top + rect.height * 0.5;
-
-        setAgents((prev) =>
-          prev.map((agent) => {
-            if (agent.assignedTargetId === id) {
-              return {
-                ...agent,
-                targetX: currentCursorX,
-                targetY: currentCursorY,
-              };
-            }
-            return agent;
-          })
-        );
-      }
-
-      if (charIndex >= totalChars) {
-        clearInterval(timer);
-      }
-    }, intervalMs);
-
-    return () => clearInterval(timer);
-  }, [building, built, unbuilt, text, duration, speedMultiplier, id, setAgents]);
-
+  // Number of revealed characters is mathematically tied to the cursor tip coordinate
+  const totalLength = text.length;
+  const displayedLength = built ? totalLength : building ? Math.floor(progress * totalLength) : 0;
   const currentText = built ? text : text.slice(0, displayedLength);
 
   // Helper to render text with optional highlighted keywords
@@ -130,8 +92,8 @@ export function CursorTypewriter({
   };
 
   return (
-    <Component ref={ref as any} id={id} className={`relative inline-block transition-all ${className}`}>
-      {/* If building, show the text revealed so far with the blinking cursor right after it */}
+    <Component ref={ref as any} id={id} className={`relative inline-block ${className}`}>
+      {/* If building: Text revealed so far trailing a blinking caret right at the cursor tip */}
       {building && (
         <span className="relative">
           <span>{renderFormattedText(currentText)}</span>
@@ -139,10 +101,10 @@ export function CursorTypewriter({
         </span>
       )}
 
-      {/* If built, render full text */}
+      {/* If built: Full text with styled keywords */}
       {built && <span>{renderFormattedText(text)}</span>}
 
-      {/* If unbuilt, placeholder spacing with wireframe blueprint line */}
+      {/* If unbuilt: Completely invisible placeholder maintaining geometry */}
       {unbuilt && (
         <span className="opacity-0 select-none pointer-events-none">
           {text}
@@ -151,4 +113,3 @@ export function CursorTypewriter({
     </Component>
   );
 }
-
