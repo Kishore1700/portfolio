@@ -16,7 +16,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 200;
+      const scrollPos = window.scrollY + 220;
       const sections = ["contact", "matrix", "flagships", "about", "home"];
       for (const sec of sections) {
         const el = document.getElementById(sec);
@@ -32,11 +32,11 @@ export function Navbar() {
 
   return (
     <header className="fixed top-4 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-5xl select-none">
-      <div className="bg-[#0C0C0C]/90 backdrop-blur-md border border-[#1E1E1E] px-4 py-2 shadow-[0_10px_35px_rgba(0,0,0,0.9)] flex items-center justify-between gap-4 font-mono text-[11px]">
+      <div className="bg-[#0C0C0C]/85 backdrop-blur-xl border border-white/10 px-4 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.85)] flex items-center justify-between gap-4 font-mono text-[11px] rounded-sm">
         
         {/* Left: Red Square Icon with Initial + Bold Uppercase Name */}
         <a href="#home" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-6 h-6 bg-[#DC2626] flex items-center justify-center font-display font-black text-white text-xs shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+          <div className="w-6 h-6 bg-[#DC2626] flex items-center justify-center font-display font-black text-white text-xs shadow-[0_0_15px_rgba(220,38,38,0.6)]">
             K
           </div>
           <span className="font-display font-extrabold text-sm text-white tracking-tight uppercase group-hover:text-[#DC2626] transition-colors">
@@ -45,7 +45,7 @@ export function Navbar() {
         </a>
 
         {/* Center: Dark Glass Pill with Nav Links & Solid #DC2626 Active Background Pill */}
-        <nav className="hidden md:flex items-center gap-1 bg-neutral-900/80 backdrop-blur border border-neutral-800 px-1.5 py-1 rounded-full">
+        <nav className="hidden md:flex items-center gap-1 bg-black/60 backdrop-blur border border-white/5 px-1.5 py-1 rounded-full">
           {navLinks.map((link) => {
             const isActive = activeSection === link.href.replace("#", "");
             return (
@@ -54,7 +54,7 @@ export function Navbar() {
                 href={link.href}
                 className={`px-3 py-1 rounded-full text-xs font-sans transition-all duration-200 ${
                   isActive
-                    ? "bg-[#DC2626] text-white font-bold shadow-[0_0_12px_rgba(220,38,38,0.4)]"
+                    ? "bg-[#DC2626] text-white font-bold shadow-[0_0_14px_rgba(220,38,38,0.5)]"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -70,7 +70,7 @@ export function Navbar() {
             href="/Kishore_Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#141414] border border-[#262626] text-neutral-300 hover:text-white hover:border-[#DC2626] transition-colors text-[10px]"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-black/60 border border-white/10 text-neutral-300 hover:text-white hover:border-[#DC2626] transition-colors text-[10px]"
             title="Download Kishore's Resume PDF"
           >
             <FileText className="w-3 h-3 text-[#DC2626]" />
@@ -79,9 +79,12 @@ export function Navbar() {
 
           <a
             href="#contact"
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-black border border-[#1E1E1E] text-neutral-300 hover:border-[#DC2626] transition-colors"
+            className="flex items-center gap-2 px-2.5 py-1 bg-black/80 border border-white/10 text-neutral-200 hover:border-[#DC2626] transition-colors"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10B981]"></span>
+            </span>
             <span className="text-[10px] text-neutral-200 font-bold uppercase tracking-wider">
               AVAILABLE DISPATCH
             </span>
@@ -93,4 +96,3 @@ export function Navbar() {
     </header>
   );
 }
-

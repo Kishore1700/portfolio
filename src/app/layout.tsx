@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-[#050505] text-[#FAFAFA] font-sans antialiased selection:bg-[#DC2626] selection:text-white relative min-h-screen bg-micro-grid">
+      <body className="bg-[#050505] text-[#FAFAFA] font-sans antialiased selection:bg-[#DC2626] selection:text-white relative min-h-screen bg-atmospheric bg-micro-grid">
         <SwarmBuilderProvider>
           <Navbar />
           <SwarmOverlay />
