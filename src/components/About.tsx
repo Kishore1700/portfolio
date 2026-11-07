@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { BuilderTarget } from "./BuilderTarget";
+import { CursorTypewriter } from "./CursorTypewriter";
 
 export function About() {
   const [activePhilosophy, setActivePhilosophy] = useState<number>(0);
@@ -52,18 +53,16 @@ export function About() {
         </div>
 
         {/* Section Header */}
-        <BuilderTarget id="about-header" label="HEADER_ABOUT">
-          <div className="space-y-1">
-            <div className="font-mono text-[10px] text-[#DC2626] tracking-widest uppercase font-bold flex items-center gap-2">
-              <span>ENGINEER PROFILE</span>
-              <span className="text-neutral-700">//</span>
-              <span className="text-neutral-400">LVL 99 MCA SCHOLAR & FULLSTACK CRAFTER</span>
-            </div>
-            <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
-              Background & Philosophy
-            </h2>
+        <div className="space-y-1">
+          <div className="font-mono text-[10px] text-[#DC2626] tracking-widest uppercase font-bold flex items-center gap-2">
+            <span>ENGINEER PROFILE</span>
+            <span className="text-neutral-700">//</span>
+            <span className="text-neutral-400">LVL 99 MCA SCHOLAR & FULLSTACK CRAFTER</span>
           </div>
-        </BuilderTarget>
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
+            <CursorTypewriter id="about-heading" text="Background & Philosophy" duration={500} />
+          </h2>
+        </div>
 
         {/* 2-Column Asymmetric Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -120,7 +119,7 @@ export function About() {
                       key={attr.name}
                       type="button"
                       onClick={() => setSelectedBuff(selectedBuff === attr.name ? null : attr.name)}
-                      className={`p-2 text-left bg-black border transition-all duration-200 ${
+                      className={`p-2 text-left bg-black border transition-all duration-200 cursor-pointer ${
                         selectedBuff === attr.name
                           ? "border-[#3B82F6] bg-[#3B82F6]/10"
                           : "border-[#1E1E1E] hover:border-[#DC2626]/70"
@@ -136,7 +135,7 @@ export function About() {
                 </div>
 
                 {selectedBuff && (
-                  <div className="text-[9px] text-[#3B82F6] bg-black p-2 border border-[#3B82F6]/40 flex items-center justify-between">
+                  <div className="text-[9px] text-[#3B82F6] bg-black p-2 border border-[#3B82F6]/40 flex items-center justify-between animate-fade-in">
                     <span>
                       ACTIVE BUFF: {attributes.find((a) => a.name === selectedBuff)?.buff} &mdash;{" "}
                       {attributes.find((a) => a.name === selectedBuff)?.desc}
@@ -198,4 +197,3 @@ export function About() {
     </section>
   );
 }
-

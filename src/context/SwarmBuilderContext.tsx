@@ -28,6 +28,7 @@ interface SwarmBuilderContextType {
   builtElements: number;
   isAllBuilt: boolean;
   agents: AgentCursor[];
+  setAgents: React.Dispatch<React.SetStateAction<AgentCursor[]>>;
   registerElement: (id: string) => void;
   requestBuild: (id: string, rect?: DOMRect) => void;
   setSpeedMultiplier: (speed: number) => void;
@@ -281,6 +282,7 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         builtElements,
         isAllBuilt,
         agents,
+        setAgents,
         registerElement,
         requestBuild,
         setSpeedMultiplier,

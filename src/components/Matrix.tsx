@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { BuilderTarget } from "./BuilderTarget";
+import { CursorTypewriter } from "./CursorTypewriter";
 
 export function Matrix() {
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
@@ -79,7 +80,7 @@ export function Matrix() {
                 ENGINEERING INDEX
               </div>
               <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
-                The Systems Matrix
+                <CursorTypewriter id="matrix-title" text="The Systems Matrix" duration={500} />
               </h2>
               <p className="font-sans text-xs text-neutral-400 max-w-xl leading-relaxed">
                 Specialized engineering capabilities across programming languages, reactive frontends, database persistence, and AI/security auditing.

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Copy, Check, Send, Github, Linkedin, MapPin, ArrowUpRight, Terminal } from "lucide-react";
 import confetti from "canvas-confetti";
 import { BuilderTarget } from "./BuilderTarget";
+import { CursorTypewriter } from "./CursorTypewriter";
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -54,7 +55,7 @@ export function Contact() {
             </div>
 
             <h2 className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight leading-tight">
-              Let's Architect Something Extraordinary.
+              <CursorTypewriter id="contact-title" text="Let's Architect Something Extraordinary." duration={700} />
             </h2>
 
             <p className="font-sans text-xs sm:text-sm text-neutral-400 max-w-xl mx-auto leading-relaxed">

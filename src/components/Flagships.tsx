@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ArrowUpRight, Github, ExternalLink, ShieldCheck } from "lucide-react";
 import { BuilderTarget } from "./BuilderTarget";
+import { CursorTypewriter } from "./CursorTypewriter";
 
 export function Flagships() {
   const [activeLayer, setActiveLayer] = useState<number>(0);
@@ -141,7 +142,7 @@ export function Flagships() {
               ARCHITECTURAL SHOWCASE
             </div>
             <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
-              Flagship Deployments
+              <CursorTypewriter id="flagship-title" text="Flagship Deployments" duration={500} />
             </h2>
             <p className="font-sans text-xs text-neutral-400 max-w-xl leading-relaxed">
               Production-grade systems running across full-stack silicon, distributed backends, and responsive client endpoints.
