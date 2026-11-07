@@ -1,10 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Cpu, CheckCircle2, Zap, GraduationCap, Calendar, Award, ShieldCheck, Code } from "lucide-react";
 import { BuilderTarget } from "./BuilderTarget";
 
 export function ExperienceEducation() {
+  const [analogSignal, setAnalogSignal] = useState(1023);
+
+  // Live telemetry pulse simulation for IoT diagnostic readout
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnalogSignal(1018 + Math.floor(Math.random() * 6));
+    }, 1800);
+    return () => clearInterval(interval);
+  }, []);
+
   const internResponsibilities = [
     "Completed intensive engineering internship focused on Internet of Things (IoT) applications.",
     "Programmed device functions, input mapping, and board routines using Arduino microcontroller boards.",
@@ -172,7 +182,7 @@ export function ExperienceEducation() {
                       </div>
                       <div className="flex justify-between text-neutral-400">
                         <span>SIGNAL_ANALOG_A0:</span>
-                        <span className="text-[#3B82F6] font-bold">1023 [MAX_INT]</span>
+                        <span className="text-[#3B82F6] font-bold">{analogSignal} [MAX_INT]</span>
                       </div>
                       <div className="flex justify-between text-neutral-400">
                         <span>SERIAL_STREAM:</span>
@@ -314,4 +324,3 @@ export function ExperienceEducation() {
     </div>
   );
 }
-

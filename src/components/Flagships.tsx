@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ArrowUpRight, Github, ExternalLink, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 import { BuilderTarget } from "./BuilderTarget";
 import { CursorTypewriter } from "./CursorTypewriter";
 
@@ -219,7 +220,7 @@ export function Flagships() {
                     className={`px-3 py-1 font-mono text-[10px] transition-all whitespace-nowrap cursor-pointer ${
                       activeLayer === idx
                         ? "bg-[#DC2626] text-white font-bold border border-[#DC2626] shadow-[0_0_12px_rgba(220,38,38,0.5)]"
-                        : "bg-[#050505] text-neutral-400 border border-[#1E1E1E] hover:text-white"
+                        : "bg-[#050505] text-neutral-400 border border-[#1E1E1E] hover:text-white hover:border-neutral-700"
                     }`}
                   >
                     {layer.chip}
@@ -229,7 +230,13 @@ export function Flagships() {
 
               {/* Bordered Inspection Panel */}
               {layers[activeLayer] && (
-                <div className="p-4 bg-[#050505] border border-[#262626] space-y-2">
+                <motion.div
+                  key={activeLayer}
+                  initial={{ opacity: 0, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.18 }}
+                  className="p-4 bg-[#050505] border border-[#262626] space-y-2 relative"
+                >
                   <div className="font-mono text-[9px] text-[#DC2626] font-bold tracking-wider">
                     {layers[activeLayer].heading}
                   </div>
@@ -246,7 +253,7 @@ export function Flagships() {
                       </span>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
             </div>
 
@@ -307,4 +314,3 @@ export function Flagships() {
     </section>
   );
 }
-

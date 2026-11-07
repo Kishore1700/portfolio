@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { BuilderTarget } from "./BuilderTarget";
 import { CursorTypewriter } from "./CursorTypewriter";
 
@@ -97,7 +98,7 @@ export function Matrix() {
                   className={`px-3 py-1 transition-all cursor-pointer border ${
                     activeFilter === tab.id
                       ? "bg-[#DC2626] text-white font-bold border-[#DC2626] shadow-[0_0_12px_rgba(220,38,38,0.4)]"
-                      : "bg-[#0C0C0C] text-neutral-400 border-[#1E1E1E] hover:text-white"
+                      : "bg-[#0C0C0C] text-neutral-400 border-[#1E1E1E] hover:text-white hover:border-neutral-700"
                   }`}
                 >
                   {tab.label}
@@ -109,40 +110,49 @@ export function Matrix() {
 
         {/* 4-Column Bento Grid */}
         <BuilderTarget id="matrix-grid" label="BENTO_MATRIX">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredSystems.map((sys) => (
-              <div key={sys.id} className="brutalist-card p-4 flex flex-col justify-between group space-y-3">
-                <div className="space-y-2">
-                  {/* Top-Left Category Badge + Top-Right System Code */}
-                  <div className="flex items-center justify-between font-mono text-[9px] pb-1.5 border-b border-[#1E1E1E]">
-                    <span className="text-[#DC2626] font-bold">{sys.categoryPill}</span>
-                    <span className="text-neutral-500 font-bold">{sys.id}</span>
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <AnimatePresence mode="popLayout">
+              {filteredSystems.map((sys) => (
+                <motion.div
+                  layout
+                  key={sys.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="brutalist-card p-4 flex flex-col justify-between group space-y-3"
+                >
+                  <div className="space-y-2">
+                    {/* Top-Left Category Badge + Top-Right System Code */}
+                    <div className="flex items-center justify-between font-mono text-[9px] pb-1.5 border-b border-[#1E1E1E]">
+                      <span className="text-[#DC2626] font-bold">{sys.categoryPill}</span>
+                      <span className="text-neutral-500 font-bold">{sys.id}</span>
+                    </div>
+
+                    <h3 className="font-display font-bold text-sm text-white group-hover:text-[#DC2626] transition-colors leading-snug">
+                      {sys.title}
+                    </h3>
+
+                    <p className="font-sans text-xs text-neutral-400 leading-relaxed">
+                      {sys.desc}
+                    </p>
                   </div>
 
-                  <h3 className="font-display font-bold text-sm text-white group-hover:text-[#DC2626] transition-colors leading-snug">
-                    {sys.title}
-                  </h3>
-
-                  <p className="font-sans text-xs text-neutral-400 leading-relaxed">
-                    {sys.desc}
-                  </p>
-                </div>
-
-                {/* Bottom Monospace Tech Stack Tags */}
-                <div className="pt-2.5 border-t border-[#1E1E1E] flex flex-wrap gap-1">
-                  {sys.tags.map((tag) => (
-                    <span key={tag} className="px-1.5 py-0.5 bg-black border border-[#1E1E1E] text-neutral-400 font-mono text-[8px]">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+                  {/* Bottom Monospace Tech Stack Tags */}
+                  <div className="pt-2.5 border-t border-[#1E1E1E] flex flex-wrap gap-1">
+                    {sys.tags.map((tag) => (
+                      <span key={tag} className="px-1.5 py-0.5 bg-black border border-[#1E1E1E] text-neutral-400 font-mono text-[8px]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </BuilderTarget>
 
       </div>
     </section>
   );
 }
-

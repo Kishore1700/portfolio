@@ -136,11 +136,9 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         return;
       }
 
-      const rect = el.getBoundingClientRect();
-      const startX = Math.max(10, rect.left + 8);
-      const startY = Math.max(10, rect.top + rect.height * 0.5);
-      const endX = Math.max(startX + 25, rect.left + rect.width - 8);
-      const sweepDistance = endX - startX;
+      const initialRect = el.getBoundingClientRect();
+      const initialStartX = Math.max(10, initialRect.left + 8);
+      const initialStartY = Math.max(10, initialRect.top + initialRect.height * 0.5);
 
       // 1. Assign a team of 2-3 agents for this element
       let leadAgentId = "";
@@ -152,7 +150,6 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         const team = available.slice(0, 3);
         
         if (team.length === 0) {
-          // Fallback to any agent
           leadAgentId = prev[0]?.id || "agent_01";
         } else {
           leadAgentId = team[0].id;
@@ -166,8 +163,8 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
           if (agent.id === leadAgentId) {
             return {
               ...agent,
-              targetX: startX,
-              targetY: startY,
+              targetX: initialStartX,
+              targetY: initialStartY,
               isAssigned: true,
               assignedTargetId: id,
               role: "lead",
@@ -176,8 +173,8 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
           if (wingAgent1Id && agent.id === wingAgent1Id) {
             return {
               ...agent,
-              targetX: Math.max(10, rect.right - 10),
-              targetY: Math.max(10, rect.top + 10),
+              targetX: Math.max(10, initialRect.right - 10),
+              targetY: Math.max(10, initialRect.top + 10),
               isAssigned: true,
               assignedTargetId: id,
               role: "wing1",
@@ -186,8 +183,8 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
           if (wingAgent2Id && agent.id === wingAgent2Id) {
             return {
               ...agent,
-              targetX: Math.max(10, rect.right - 10),
-              targetY: Math.max(10, rect.bottom - 10),
+              targetX: Math.max(10, initialRect.right - 10),
+              targetY: Math.max(10, initialRect.bottom - 10),
               isAssigned: true,
               assignedTargetId: id,
               role: "wing2",
@@ -205,8 +202,7 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
         // Now turn on Figma Blue wireframe (#3B82F6) and sweep cursor across to type/reveal!
         setStates((prev) => ({ ...prev, [id]: "BUILDING" }));
 
-        // Sweep duration based on element width
-        const baseSweepDuration = Math.min(850, Math.max(340, sweepDistance * 1.1));
+        const baseSweepDuration = Math.min(850, Math.max(340, (el.getBoundingClientRect().width || 200) * 1.1));
         const sweepDuration = Math.round(baseSweepDuration / speedMultiplier);
         const startTime = Date.now();
 
@@ -221,8 +217,13 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
             [`${id}-text`]: progress,
           }));
 
-          // Lead cursor physically sweeps from startX to endX, leading the revealed letters!
-          const currentCursorX = startX + progress * sweepDistance;
+          // Dynamically re-measure in case of scrolling so cursor stays perfectly pinned to text
+          const currentRect = el.getBoundingClientRect();
+          const currentStartX = Math.max(10, currentRect.left + 8);
+          const currentStartY = Math.max(10, currentRect.top + currentRect.height * 0.5);
+          const currentEndX = Math.max(currentStartX + 25, currentRect.left + currentRect.width - 8);
+          const currentSweepDist = currentEndX - currentStartX;
+          const currentCursorX = currentStartX + progress * currentSweepDist;
 
           setAgents((prev) =>
             prev.map((agent) => {
@@ -230,15 +231,22 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
                 return {
                   ...agent,
                   targetX: currentCursorX,
-                  targetY: startY,
+                  targetY: currentStartY,
                 };
               }
               if (wingAgent1Id && agent.id === wingAgent1Id) {
                 // Subtle breathing movement on corner resize handle
                 return {
                   ...agent,
-                  targetX: Math.max(10, rect.right - 10 + Math.sin(elapsed * 0.01) * 3),
-                  targetY: Math.max(10, rect.top + 10),
+                  targetX: Math.max(10, currentRect.right - 10 + Math.sin(elapsed * 0.01) * 3),
+                  targetY: Math.max(10, currentRect.top + 10),
+                };
+              }
+              if (wingAgent2Id && agent.id === wingAgent2Id) {
+                return {
+                  ...agent,
+                  targetX: Math.max(10, currentRect.right - 10),
+                  targetY: Math.max(10, currentRect.bottom - 10),
                 };
               }
               return agent;
@@ -286,14 +294,21 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
     [speedMultiplier]
   );
 
-  // Sequential queue dispatcher
+  // Queue dispatcher supporting sequential hero build + concurrent scroll builds
   const processNextInQueue = useCallback(() => {
     if (buildQueue.current.length === 0) {
       isHeroSequenceActive.current = false;
       return;
     }
 
-    const nextId = buildQueue.current.shift()!;
+    // Limit concurrency to 1 during Hero sequence, up to 2 for offscreen sections
+    const maxConcurrent = isHeroSequenceActive.current ? 1 : 2;
+    if (activeBuilds.current.size >= maxConcurrent) {
+      return;
+    }
+
+    const nextId = buildQueue.current.shift();
+    if (!nextId) return;
 
     setStates((currentStates) => {
       if (currentStates[nextId] === "BUILT") {
@@ -310,6 +325,11 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
 
       return currentStates;
     });
+
+    // If more slots available and queue not empty, process next concurrently
+    if (!isHeroSequenceActive.current && activeBuilds.current.size < maxConcurrent && buildQueue.current.length > 0) {
+      setTimeout(processNextInQueue, 20);
+    }
   }, [executeElementBuild]);
 
   const enqueue = useCallback(
@@ -317,9 +337,7 @@ export function SwarmBuilderProvider({ children }: { children: React.ReactNode }
       if (!buildQueue.current.includes(id)) {
         buildQueue.current.push(id);
       }
-      if (activeBuilds.current.size === 0) {
-        processNextInQueue();
-      }
+      processNextInQueue();
     },
     [processNextInQueue]
   );
